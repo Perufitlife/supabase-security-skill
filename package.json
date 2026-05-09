@@ -1,0 +1,24 @@
+{
+  "name": "supabase-security",
+  "version": "0.1.0",
+  "description": "Audit and fix Supabase security issues: RLS, grants, exposed functions. Detects what attackers see with your anon key.",
+  "type": "module",
+  "bin": {
+    "supabase-security": "./scripts/cli.js"
+  },
+  "scripts": {
+    "audit": "node scripts/audit.js",
+    "report": "node scripts/report.js",
+    "remediate": "node scripts/remediate.js"
+  },
+  "keywords": ["supabase", "security", "rls", "audit", "postgres", "ai-skill"],
+  "author": "Renzo Madueno (@Perufitlife)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Perufitlife/supabase-security-skill"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
