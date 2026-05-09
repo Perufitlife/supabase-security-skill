@@ -21,6 +21,23 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
+function probeBlock(probe) {
+  if (!probe) return "";
+  if (probe.confirmed) {
+    const s = probe.sample || {};
+    return `
+    <div class="bg-red-900 text-white p-3 rounded mb-2 text-sm">
+      <div class="font-bold mb-1">★ CONFIRMED LEAK — fetched live with anon key</div>
+      <div class="text-xs">HTTP ${probe.status} &middot; ${s.row_count ?? 0} row(s) returned &middot; ${s.bytes_returned ?? 0} bytes leaked</div>
+      ${s.columns?.length ? `<div class="text-xs mt-1 opacity-90">Columns visible: <code>${escapeHtml(s.columns.join(", "))}</code></div>` : ""}
+    </div>`;
+  }
+  return `
+    <div class="bg-gray-200 text-gray-700 p-2 rounded mb-2 text-xs">
+      ▸ Active probe: HTTP ${probe.status} (${escapeHtml(probe.reason || "blocked")}) — finding inferred from metadata, not confirmed live
+    </div>`;
+}
+
 function findingCard(f, idx) {
   const style = SEVERITY_STYLE[f.severity] || SEVERITY_STYLE.info;
   const icon = SEVERITY_ICON[f.severity] || "[INFO]";
@@ -31,6 +48,7 @@ function findingCard(f, idx) {
       <span class="${style.badge} text-white text-xs font-bold px-2 py-1 rounded uppercase">${escapeHtml(f.severity)}</span>
     </div>
     <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">${escapeHtml(f.target)}</code></p>
+    ${probeBlock(f.probe)}
     <p class="text-sm mb-3">${escapeHtml(f.explain)}</p>
     ${f.details ? `<details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">${escapeHtml(JSON.stringify(f.details, null, 2))}</pre></details>` : ""}
     <details class="text-xs">
@@ -42,8 +60,13 @@ function findingCard(f, idx) {
 }
 
 export function renderHtml(result) {
-  const { project_name, project_ref, region, scanned_at, summary, findings, n_tables_scanned, n_functions_scanned, n_buckets_scanned } = result;
+  const { project_name, project_ref, region, scanned_at, summary, findings, n_tables_scanned, n_functions_scanned, n_buckets_scanned, active_probe } = result;
   const total = findings.length;
+  const probeBanner = active_probe?.enabled
+    ? (active_probe.confirmed > 0
+        ? `<div class="bg-red-700 text-white p-3 rounded mb-4 text-center font-semibold">★ Active anon-key probe ran. ${active_probe.confirmed} of ${active_probe.probed} suspected leaks were confirmed live (we fetched the data with the anon key).</div>`
+        : `<div class="bg-emerald-100 text-emerald-900 border border-emerald-300 p-3 rounded mb-4 text-center text-sm">▸ Active anon-key probe ran on ${active_probe.probed} suspected leak(s). ${active_probe.confirmed} confirmed.</div>`)
+    : `<div class="bg-gray-100 text-gray-700 border border-gray-300 p-3 rounded mb-4 text-center text-sm">▸ Active probe disabled. Findings inferred from metadata only. Re-run without --no-probe to fetch live with the anon key.</div>`;
   const score = Math.max(0, 100 - (summary.critical * 20 + summary.high * 10 + summary.medium * 4 + summary.low * 1));
   const grade = score >= 95 ? "A+" : score >= 85 ? "A" : score >= 70 ? "B" : score >= 50 ? "C" : score >= 30 ? "D" : "F";
   const gradeColor = score >= 85 ? "text-green-600" : score >= 50 ? "text-yellow-600" : "text-red-600";
@@ -92,6 +115,8 @@ export function renderHtml(result) {
         <div class="text-xs uppercase">Low/Info</div>
       </div>
     </div>
+
+    ${probeBanner}
 
     <!-- Coverage -->
     <div class="bg-white p-5 rounded-lg shadow mb-6">

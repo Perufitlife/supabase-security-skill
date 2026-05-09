@@ -1,7 +1,7 @@
 {
   "name": "supabase-security",
-  "version": "0.1.0",
-  "description": "Audit and fix Supabase security issues: RLS, grants, exposed functions. Detects what attackers see with your anon key.",
+  "version": "0.3.0",
+  "description": "Audit Supabase security issues (RLS, grants, exposed functions) AND prove leaks live via active anon-key probe. Other auditors infer; this one fetches and shows the bytes leaked.",
   "type": "module",
   "bin": {
     "supabase-security": "./scripts/cli.js"

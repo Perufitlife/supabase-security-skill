@@ -72,13 +72,15 @@ const CHECKS = {
   },
 };
 
+const UA = "supabase-security/0.3";
+
 async function sql(token, ref, query) {
   const r = await fetch(`${API}/projects/${ref}/database/query`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
-      "User-Agent": "supabase-security/0.1",
+      "User-Agent": UA,
     },
     body: JSON.stringify({ query }),
   });
@@ -88,14 +90,13 @@ async function sql(token, ref, query) {
 
 async function getProjectMeta(token, ref) {
   const r = await fetch(`${API}/projects/${ref}`, {
-    headers: { Authorization: `Bearer ${token}`, "User-Agent": "supabase-security/0.1" },
+    headers: { Authorization: `Bearer ${token}`, "User-Agent": UA },
   });
   if (!r.ok) return { name: ref, region: "unknown" };
   return r.json();
 }
 
 async function getStorageBuckets(token, ref) {
-  // Buckets are stored in storage.buckets; query via SQL
   try {
     return await sql(token, ref, "SELECT id, name, public FROM storage.buckets ORDER BY name;");
   } catch {
@@ -105,15 +106,69 @@ async function getStorageBuckets(token, ref) {
 
 async function getAuthConfig(token, ref) {
   const r = await fetch(`${API}/projects/${ref}/config/auth`, {
-    headers: { Authorization: `Bearer ${token}`, "User-Agent": "supabase-security/0.1" },
+    headers: { Authorization: `Bearer ${token}`, "User-Agent": UA },
   });
   if (!r.ok) return null;
   return r.json();
 }
 
-async function audit(token, ref) {
+// Pull project anon API key for active probing.
+async function getAnonKey(token, ref) {
+  try {
+    const r = await fetch(`${API}/projects/${ref}/api-keys?reveal=true`, {
+      headers: { Authorization: `Bearer ${token}`, "User-Agent": UA },
+    });
+    if (!r.ok) return null;
+    const keys = await r.json();
+    const anon = Array.isArray(keys) ? keys.find((k) => k.name === "anon") : null;
+    return anon?.api_key || null;
+  } catch {
+    return null;
+  }
+}
+
+// Active probe: hit PostgREST with the anon key to PROVE the leak (not just infer it from pg_class).
+// Returns { confirmed, status, sample } so reports show evidence, not assumption.
+async function probeAnonAccess(supabaseUrl, anonKey, tableName) {
+  try {
+    const r = await fetch(`${supabaseUrl}/rest/v1/${encodeURIComponent(tableName)}?limit=1`, {
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`,
+        "User-Agent": UA,
+      },
+    });
+    const status = r.status;
+    if (!r.ok) {
+      return { confirmed: false, status, reason: status === 401 ? "anon blocked" : status === 404 ? "table not in PostgREST schema" : `http ${status}` };
+    }
+    const body = await r.text();
+    let row_count = 0;
+    let columns = [];
+    try {
+      const parsed = JSON.parse(body);
+      if (Array.isArray(parsed)) {
+        row_count = parsed.length;
+        if (parsed[0] && typeof parsed[0] === "object") columns = Object.keys(parsed[0]);
+      }
+    } catch { /* non-JSON */ }
+    return {
+      confirmed: true,
+      status,
+      sample: { row_count, columns: columns.slice(0, 8), bytes_returned: body.length },
+    };
+  } catch (e) {
+    return { confirmed: false, status: 0, reason: `network error: ${e.message}` };
+  }
+}
+
+async function audit(token, ref, opts = {}) {
+  const { activeProbe = true } = opts;
   const findings = [];
   const meta = await getProjectMeta(token, ref);
+  const supabaseUrl = `https://${ref}.supabase.co`;
+  const anonKey = activeProbe ? await getAnonKey(token, ref) : null;
+  const probeAvailable = !!anonKey;
 
   // 1. Tables: RLS status + policy count + anon grants
   const tables = await sql(
@@ -135,7 +190,7 @@ async function audit(token, ref) {
 
   for (const t of tables) {
     if (!t.rls_enabled && (t.anon_select || t.anon_insert || t.anon_delete)) {
-      findings.push({
+      const finding = {
         check: "rls_disabled",
         ...CHECKS.rls_disabled,
         target: t.table_name,
@@ -145,7 +200,11 @@ async function audit(token, ref) {
           anon_delete: t.anon_delete,
         },
         fix_sql: `ALTER TABLE public.${t.table_name} ENABLE ROW LEVEL SECURITY;`,
-      });
+      };
+      if (probeAvailable && t.anon_select) {
+        finding.probe = await probeAnonAccess(supabaseUrl, anonKey, t.table_name);
+      }
+      findings.push(finding);
     } else if (t.rls_enabled && t.n_policies === 0 && (t.anon_select || t.auth_select)) {
       findings.push({
         check: "rls_no_policies_with_anon_grants",
@@ -210,13 +269,17 @@ async function audit(token, ref) {
   for (const rt of realtimeTables) {
     const rls = tableRlsMap.get(rt.tablename);
     if (rls === false) {
-      findings.push({
+      const finding = {
         check: "realtime_publication_no_rls",
         ...CHECKS.realtime_publication_no_rls,
         target: rt.tablename,
         details: { in_publication: "supabase_realtime", rls_enabled: false },
         fix_sql: `ALTER TABLE public.${rt.tablename} ENABLE ROW LEVEL SECURITY;\n-- Or remove from publication: ALTER PUBLICATION supabase_realtime DROP TABLE public.${rt.tablename};`,
-      });
+      };
+      if (probeAvailable) {
+        finding.probe = await probeAnonAccess(supabaseUrl, anonKey, rt.tablename);
+      }
+      findings.push(finding);
     }
   }
 
@@ -337,12 +400,16 @@ async function audit(token, ref) {
     { critical: 0, high: 0, medium: 0, low: 0, info: 0 }
   );
 
+  const probed = findings.filter((f) => f.probe).length;
+  const confirmed = findings.filter((f) => f.probe?.confirmed).length;
+
   return {
     project_ref: ref,
     project_name: meta.name || ref,
     region: meta.region || "unknown",
     scanned_at: new Date().toISOString(),
-    scanned_by: "supabase-security v0.1",
+    scanned_by: "supabase-security v0.3",
+    active_probe: { enabled: probeAvailable, probed, confirmed },
     summary,
     n_tables_scanned: tables.length,
     n_functions_scanned: funcs.length,
@@ -355,7 +422,7 @@ async function audit(token, ref) {
 async function main() {
   const args = process.argv.slice(2);
   if (args.length === 0 || args.includes("--help") || args.includes("-h")) {
-    console.error(`Usage: SUPABASE_ACCESS_TOKEN=sbp_xxx supabase-security <project-ref> [--json|--html report.html]`);
+    console.error(`Usage: SUPABASE_ACCESS_TOKEN=sbp_xxx supabase-security <project-ref> [--json|--html report.html] [--no-probe]\n\n--no-probe    skip the active anon probe (default: probe ON; we hit the public API to PROVE leaks, not just infer)`);
     process.exit(1);
   }
 
@@ -365,8 +432,9 @@ async function main() {
     console.error("Error: provide SUPABASE_ACCESS_TOKEN env var or --token flag (Personal Access Token from supabase.com/dashboard/account/tokens)");
     process.exit(1);
   }
+  const activeProbe = !args.includes("--no-probe");
 
-  const result = await audit(token, ref);
+  const result = await audit(token, ref, { activeProbe });
 
   const htmlIdx = args.indexOf("--html");
   if (htmlIdx !== -1) {
@@ -374,7 +442,7 @@ async function main() {
     const { renderHtml } = await import("./report.js");
     writeFileSync(out, renderHtml(result));
     console.error(`HTML report written to ${out}`);
-    console.error(`Findings: ${result.summary.critical} critical, ${result.summary.high} high, ${result.summary.medium} medium`);
+    console.error(`Findings: ${result.summary.critical} critical, ${result.summary.high} high, ${result.summary.medium} medium${result.active_probe.enabled ? ` (${result.active_probe.confirmed} CONFIRMED via active probe)` : ""}`);
   } else {
     console.log(JSON.stringify(result, null, 2));
   }
@@ -387,4 +455,4 @@ if (import.meta.url === `file://${process.argv[1].replace(/\\/g, "/")}` || impor
   });
 }
 
-export { audit };
+export { audit, sql, getAnonKey, probeAnonAccess };
