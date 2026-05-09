@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Firebase Security Report — test-fixtures/bad.rules</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+  <div class="max-w-5xl mx-auto p-6">
+
+    <div class="bg-gradient-to-r from-yellow-600 to-orange-500 text-white p-8 rounded-lg shadow-lg mb-6">
+      <h1 class="text-3xl font-bold mb-2">Firebase Security Report</h1>
+      <p class="text-yellow-100"><strong>Rules file:</strong> test-fixtures/bad.rules</p>
+      
+      <p class="text-yellow-100"><strong>Scanned:</strong> 5/9/2026, 10:33:54 PM</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+      <div class="bg-white p-5 rounded-lg shadow text-center col-span-2 md:col-span-1">
+        <div class="text-6xl font-bold text-red-600">D</div>
+        <div class="text-sm text-gray-500 mt-1">Score: 40/100</div>
+      </div>
+      <div class="bg-red-600 text-white p-5 rounded-lg shadow text-center"><div class="text-3xl font-bold">2</div><div class="text-xs uppercase">Critical</div></div>
+      <div class="bg-orange-500 text-white p-5 rounded-lg shadow text-center"><div class="text-3xl font-bold">2</div><div class="text-xs uppercase">High</div></div>
+      <div class="bg-yellow-500 text-white p-5 rounded-lg shadow text-center"><div class="text-3xl font-bold">0</div><div class="text-xs uppercase">Medium</div></div>
+      <div class="bg-blue-500 text-white p-5 rounded-lg shadow text-center"><div class="text-3xl font-bold">1</div><div class="text-xs uppercase">Low/Info</div></div>
+    </div>
+
+    <div class="bg-gray-100 text-gray-700 border border-gray-300 p-3 rounded mb-4 text-center text-sm">▸ Active probe disabled. Findings inferred from rules file only. Add --project-id to probe live.</div>
+
+    <div class="bg-white p-5 rounded-lg shadow mb-6">
+      <h2 class="text-lg font-bold mb-3">Coverage</h2>
+      <div class="grid grid-cols-3 gap-4 text-center">
+        <div><div class="text-2xl font-bold text-gray-700">6</div><div class="text-xs text-gray-500">match blocks</div></div>
+        <div><div class="text-2xl font-bold text-gray-700">5</div><div class="text-xs text-gray-500">allow statements</div></div>
+        <div><div class="text-2xl font-bold text-gray-700">7</div><div class="text-xs text-gray-500">checks run</div></div>
+      </div>
+    </div>
+
+    
+    <div class="bg-white p-5 rounded-lg shadow mb-6">
+      <h2 class="text-lg font-bold mb-3">Findings by severity</h2>
+      <canvas id="severityChart" height="80"></canvas>
+    </div>
+    
+
+    
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold mb-4">Findings (5)</h2>
+      
+  <div class="bg-red-100 text-red-900 border-l-4 border-red-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[CRITICAL] Wildcard match `/{document=**}` with `if true` — ALL documents publicly readable/writable</h3>
+      <span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded uppercase">critical</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">/{document=**} (read,write)</code></p>
+    
+    <p class="text-sm mb-3">The infamous Firebase data leak pattern. `match /{document=**} { allow read, write: if true; }` opens every collection in the database to anyone with the project ID. Common in dev rules left in production.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;path&quot;: &quot;/{document=**}&quot;,
+  &quot;ops&quot;: [
+    &quot;read&quot;,
+    &quot;write&quot;
+  ],
+  &quot;condition&quot;: &quot;true&quot;,
+  &quot;line&quot;: 7
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix snippet (paste into firestore.rules)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-0">// firestore.rules — replace catch-all &quot;if true&quot; with explicit deny + per-collection rules:
+match /{document=**} {
+  allow read, write: if false;        // explicit default-deny
+}
+match /users/{uid} {
+  allow read, write: if request.auth != null &amp;&amp; request.auth.uid == uid;
+}
+match /publicConfig/{doc} {
+  allow read: if true;                 // ONLY read, ONLY this collection
+  allow write: if false;
+}</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-0').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy snippet</button>
+    </details>
+  </div>
+  <div class="bg-red-100 text-red-900 border-l-4 border-red-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[CRITICAL] Rule contains `if true` literal — bypasses all security checks</h3>
+      <span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded uppercase">critical</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">/publicData/{doc} (read,write)</code></p>
+    
+    <p class="text-sm mb-3">`allow read, write: if true;` always evaluates to true. Anyone with the project ID can read or write this path without auth. Almost always a leftover from local development.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;path&quot;: &quot;/publicData/{doc}&quot;,
+  &quot;ops&quot;: [
+    &quot;read&quot;,
+    &quot;write&quot;
+  ],
+  &quot;condition&quot;: &quot;true&quot;,
+  &quot;line&quot;: 12
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix snippet (paste into firestore.rules)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-1">// firestore.rules line 12:
+// Replace &#39;if true&#39; with an explicit ownership check.
+match /publicData/{doc} {
+  allow read, write: if request.auth != null &amp;&amp; request.auth.uid == resource.data.ownerId;
+}</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-1').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy snippet</button>
+    </details>
+  </div>
+  <div class="bg-orange-100 text-orange-900 border-l-4 border-orange-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[HIGH] Rule allows any signed-in user (`if request.auth != null`) without ownership check</h3>
+      <span class="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">high</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">/users/{uid} (read,write)</code></p>
+    
+    <p class="text-sm mb-3">`if request.auth != null` lets any signed-up user read/write the document, including anonymous-auth users. Identical to the PocketBase `@request.auth.id != &quot;&quot;` anti-pattern. Tighten with `request.auth.uid == resource.data.ownerId` or similar ownership check.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;path&quot;: &quot;/users/{uid}&quot;,
+  &quot;ops&quot;: [
+    &quot;read&quot;,
+    &quot;write&quot;
+  ],
+  &quot;condition&quot;: &quot;request.auth != null&quot;,
+  &quot;line&quot;: 17
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix snippet (paste into firestore.rules)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-2">// firestore.rules line 17:
+// &#39;request.auth != null&#39; lets ANY signed-up user (including anonymous-auth) read/write.
+// Add ownership scoping:
+match /users/{uid} {
+  allow read, write: if request.auth != null &amp;&amp; request.auth.uid == resource.data.ownerId;
+}</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-2').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy snippet</button>
+    </details>
+  </div>
+  <div class="bg-orange-100 text-orange-900 border-l-4 border-orange-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[HIGH] Test mode rules: timestamp-based expiry already passed or about to expire</h3>
+      <span class="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">high</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">/testMode/{doc} (read,write)</code></p>
+    
+    <p class="text-sm mb-3">`request.time &lt; timestamp.date(YYYY, MM, DD)` is the default test-mode rule Firebase generates. After the date passes, it becomes effectively `if false` (denies everything) — but BEFORE it passes, it&#39;s `if true` (open to all). If the date is in the future, this is wide open right now.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;path&quot;: &quot;/testMode/{doc}&quot;,
+  &quot;ops&quot;: [
+    &quot;read&quot;,
+    &quot;write&quot;
+  ],
+  &quot;condition&quot;: &quot;request.time &lt; timestamp.date(2027, 1, 1)&quot;,
+  &quot;line&quot;: 22,
+  &quot;expiry_date&quot;: &quot;2026-12-31&quot;,
+  &quot;currently_open&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix snippet (paste into firestore.rules)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-3">// firestore.rules line 22:
+// Test-mode timestamp rule. EXPIRES 2026-12-31 — currently OPEN.
+// Replace with proper auth rules:
+match /testMode/{doc} {
+  allow read, write: if request.auth != null;  // tighten further per-collection
+}</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-3').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy snippet</button>
+    </details>
+  </div>
+  <div class="bg-gray-100 text-gray-900 border-l-4 border-gray-400 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[INFO] No explicit default-deny rule — relying on Firebase implicit deny</h3>
+      <span class="bg-gray-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">info</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">(end of file)</code></p>
+    
+    <p class="text-sm mb-3">Firebase denies by default if no rule matches, but having an explicit `match /{document=**} { allow read, write: if false; }` at the bottom is a defensive habit that prevents accidents from rule reorders.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;recommendation&quot;: &quot;add `match /{document=**} { allow read, write: if false; }` at end&quot;
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix snippet (paste into firestore.rules)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-4">// firestore.rules — add at end of service block:
+match /{document=**} {
+  allow read, write: if false;
+}</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-4').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy snippet</button>
+    </details>
+  </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-lg shadow mb-6">
+      <h2 class="text-lg font-bold mb-3">Apply all fixes (paste into firestore.rules)</h2>
+      <p class="text-sm text-gray-600 mb-3">Review each block before deploying. Then: <code>firebase deploy --only firestore:rules</code></p>
+      <pre class="bg-gray-900 text-green-300 p-4 rounded overflow-x-auto text-xs"><code id="all-fixes">// Wildcard match `/{document=**}` with `if true` — ALL documents publicly readable/writable (/{document=**} (read,write))
+// firestore.rules — replace catch-all &quot;if true&quot; with explicit deny + per-collection rules:
+match /{document=**} {
+  allow read, write: if false;        // explicit default-deny
+}
+match /users/{uid} {
+  allow read, write: if request.auth != null &amp;&amp; request.auth.uid == uid;
+}
+match /publicConfig/{doc} {
+  allow read: if true;                 // ONLY read, ONLY this collection
+  allow write: if false;
+}
+
+// Rule contains `if true` literal — bypasses all security checks (/publicData/{doc} (read,write))
+// firestore.rules line 12:
+// Replace &#39;if true&#39; with an explicit ownership check.
+match /publicData/{doc} {
+  allow read, write: if request.auth != null &amp;&amp; request.auth.uid == resource.data.ownerId;
+}
+
+// Rule allows any signed-in user (`if request.auth != null`) without ownership check (/users/{uid} (read,write))
+// firestore.rules line 17:
+// &#39;request.auth != null&#39; lets ANY signed-up user (including anonymous-auth) read/write.
+// Add ownership scoping:
+match /users/{uid} {
+  allow read, write: if request.auth != null &amp;&amp; request.auth.uid == resource.data.ownerId;
+}
+
+// Test mode rules: timestamp-based expiry already passed or about to expire (/testMode/{doc} (read,write))
+// firestore.rules line 22:
+// Test-mode timestamp rule. EXPIRES 2026-12-31 — currently OPEN.
+// Replace with proper auth rules:
+match /testMode/{doc} {
+  allow read, write: if request.auth != null;  // tighten further per-collection
+}
+
+// No explicit default-deny rule — relying on Firebase implicit deny ((end of file))
+// firestore.rules — add at end of service block:
+match /{document=**} {
+  allow read, write: if false;
+}</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('all-fixes').textContent)" class="mt-3 bg-orange-600 hover:bg-orange-700 text-white text-sm px-4 py-2 rounded">Copy all snippets</button>
+    </div>
+    
+
+    <div class="text-center text-xs text-gray-500 mt-8 pb-4">
+      Generated by <a href="https://github.com/Perufitlife/firebase-security-skill" class="text-orange-700 underline">firebase-security</a>
+      &middot; Open source (MIT) &middot; Static analysis runs locally; project-id probe sends only an unauthenticated GET.
+    </div>
+  </div>
+
+  
+  <script>
+    new Chart(document.getElementById("severityChart"), {
+      type: "bar",
+      data: {
+        labels: ["Critical", "High", "Medium", "Low", "Info"],
+        datasets: [{
+          data: [2, 2, 0, 0, 1],
+          backgroundColor: ["#dc2626", "#f97316", "#eab308", "#3b82f6", "#6b7280"]
+        }]
+      },
+      options: {
+        indexAxis: "y",
+        plugins: { legend: { display: false } },
+        scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+      }
+    });
+  </script>
+</body>
+</html>
