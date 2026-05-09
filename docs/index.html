@@ -31,11 +31,25 @@
   </div>
 
   <div class="bg-emerald-700 rounded-2xl p-8 mb-8 text-center">
-    <div class="text-emerald-100 text-sm uppercase font-bold tracking-wider mb-2">One-time payment</div>
-    <div class="text-7xl font-black mb-1">$99</div>
-    <div class="text-emerald-200 mb-6">USD · Stripe · No subscription · Money-back if I find nothing real</div>
-    <a href="https://buy.stripe.com/8x2cN56HK2wi3ihf5EcAo08" class="inline-block bg-white text-emerald-700 font-bold text-lg px-8 py-4 rounded-xl shadow-xl hover:bg-emerald-50 transition">Pay $99 → start audit</a>
-    <div class="text-emerald-200 text-xs mt-4">After payment: you'll get an email asking for a Supabase Personal Access Token (read-only is fine — a 30-second flow). I never ask for service-role keys.</div>
+    <div class="text-emerald-100 text-sm uppercase font-bold tracking-wider mb-2">Pick a tier (one-time payment, no subscription)</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-4 text-left">
+      <div class="bg-emerald-800/60 border-2 border-amber-300 rounded-xl p-5 relative">
+        <div class="absolute -top-3 right-3 bg-amber-300 text-emerald-900 text-xs font-bold px-3 py-1 rounded-full uppercase">Most popular</div>
+        <div class="text-emerald-200 text-xs uppercase tracking-wider">Lite</div>
+        <div class="text-5xl font-black mb-1">$29</div>
+        <div class="text-emerald-200 text-sm mb-3">Top 5 critical findings + fix snippets, 24h</div>
+        <a href="https://buy.stripe.com/14A4gz4zCfj44mlg9IcAo09" class="inline-block w-full text-center bg-amber-300 hover:bg-amber-200 text-emerald-900 font-bold text-base px-5 py-3 rounded-lg shadow-lg transition">Get $29 lite audit</a>
+        <div class="text-emerald-300/80 text-xs mt-2">Best for solo devs / MVPs. Upgrade to full anytime.</div>
+      </div>
+      <div class="bg-emerald-800/40 border border-emerald-500/40 rounded-xl p-5">
+        <div class="text-emerald-200 text-xs uppercase tracking-wider">Full</div>
+        <div class="text-5xl font-black mb-1">$99</div>
+        <div class="text-emerald-200 text-sm mb-3">Every table/policy/bucket + executive summary + fix SQL bundle</div>
+        <a href="https://buy.stripe.com/8x2cN56HK2wi3ihf5EcAo08" class="inline-block w-full text-center bg-white hover:bg-emerald-50 text-emerald-700 font-bold text-base px-5 py-3 rounded-lg shadow-lg transition">Get $99 full audit</a>
+        <div class="text-emerald-300/80 text-xs mt-2">Best for production apps + multi-tenant. Money-back if I find nothing real.</div>
+      </div>
+    </div>
+    <div class="text-emerald-200 text-xs mt-4">After payment: you'll get an email asking for a read-only Personal Access Token (30-second flow). I never ask for service-role keys.</div>
     <div class="text-emerald-100 text-sm mt-3">→ <a href="/supabase-security-skill/sample-report.html" class="underline hover:text-white">See a sample HTML report</a> (the deliverable, generated against an intentionally-leaky test fixture)</div>
     <div class="text-emerald-100 text-sm mt-2">⚡ <a href="/supabase-security-skill/scan.html" class="underline hover:text-white font-bold">NEW: Free in-browser scan</a> — paste your project URL + anon key, see what's exposed in 5 seconds. Runs locally, nothing sent to my server.</div>
     <div class="mt-6 pt-6 border-t border-emerald-500/30">
