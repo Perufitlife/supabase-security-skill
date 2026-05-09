@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Free Supabase Leak Scan — runs in your browser, no install</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Paste your Supabase project URL + anon key. Get an instant report of which tables are publicly readable. Runs in your browser - the URL + anon key never leave your machine.">
+<meta property="og:title" content="Free Supabase Leak Scan — instant, no install">
+<meta property="og:description" content="Paste project URL + anon key. See what's exposed in 5 seconds.">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-white min-h-screen">
+<div class="max-w-3xl mx-auto px-6 py-10">
+
+  <a href="/supabase-security-skill/" class="text-emerald-400 underline text-sm">&larr; Back to landing</a>
+
+  <h1 class="text-4xl font-bold mt-6 mb-2">Free Supabase Leak Scan</h1>
+  <p class="text-slate-300 mb-6">Paste your project URL + anon key. The scan runs entirely in your browser. <strong>Nothing is sent to my server.</strong> Open DevTools → Network if you want to verify — every request goes directly from your browser to <code>your-project.supabase.co</code>.</p>
+
+  <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+    <label class="block">
+      <span class="text-sm font-medium text-emerald-300">Supabase project URL</span>
+      <input id="url" type="text" placeholder="https://xxxxxxxxxx.supabase.co" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono">
+    </label>
+    <label class="block mt-4">
+      <span class="text-sm font-medium text-emerald-300">Anon (public) key</span>
+      <textarea id="anon" rows="3" placeholder="eyJhbGciOiJIUzI1NiIs..." class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs font-mono"></textarea>
+      <span class="text-xs text-slate-400 mt-1 block">This is the same anon key sitting in any deployed Supabase app's JS bundle. Anyone visiting your site already has it.</span>
+    </label>
+    <label class="block mt-4">
+      <span class="text-sm font-medium text-emerald-300">Tables to probe (comma-separated, optional)</span>
+      <input id="tables" type="text" placeholder="users, profiles, orders, payments, sessions, api_keys, ..." class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono">
+      <span class="text-xs text-slate-400 mt-1 block">Leave blank to probe a default list of common-name tables (40 names). Add your own table names for a more targeted scan.</span>
+    </label>
+    <button id="scan" class="mt-5 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold px-6 py-3 rounded-lg w-full transition disabled:opacity-50 disabled:cursor-not-allowed">Scan now</button>
+  </div>
+
+  <div id="results" class="mt-8 hidden">
+    <h2 class="text-2xl font-bold mb-3">Results</h2>
+    <div id="summary" class="mb-4"></div>
+    <div id="findings" class="space-y-3"></div>
+    <div class="mt-6 bg-emerald-900/40 border border-emerald-500/40 rounded-xl p-5">
+      <p class="text-sm">Found leaks and want a thorough audit (every table, RLS policies, storage buckets, SECURITY DEFINER functions, signed URL leaks) + written report?</p>
+      <a href="https://buy.stripe.com/8x2cN56HK2wi3ihf5EcAo08" class="mt-3 inline-block bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold px-5 py-2 rounded-lg">$99 → full audit (24h)</a>
+      <a href="/supabase-security-skill/" class="ml-3 text-emerald-300 underline text-sm">More info</a>
+    </div>
+  </div>
+
+  <div class="mt-12 text-xs text-slate-500">
+    <p><strong>How this works:</strong> the form fires <code>GET https://&lt;your-url&gt;/rest/v1/&lt;table&gt;?select=*&amp;limit=1</code> with <code>apikey: &lt;your-anon-key&gt;</code> for each table name. If the response has rows, the table is publicly accessible. This is the same request any anonymous visitor with your site's bundled anon key could fire — we're just making it visible to you.</p>
+    <p class="mt-2">If you don't want to paste the key here, you can also run the same scan from your terminal: <code>npx supabase-security &lt;project-ref&gt;</code> (requires a personal access token, more thorough).</p>
+  </div>
+
+</div>
+
+<script>
+const COMMON_TABLES = [
+  "users", "profiles", "user_profiles", "accounts", "members",
+  "orders", "purchases", "payments", "subscriptions", "invoices",
+  "sessions", "api_keys", "tokens", "secrets", "credentials",
+  "messages", "notifications", "emails", "logs", "events",
+  "products", "items", "posts", "comments", "reviews",
+  "tenants", "organizations", "teams", "workspaces", "projects",
+  "files", "uploads", "documents", "attachments", "media",
+  "settings", "config", "preferences", "feature_flags", "audit_logs"
+];
+
+document.getElementById("scan").addEventListener("click", async () => {
+  const url = document.getElementById("url").value.trim().replace(/\/$/, "");
+  const anon = document.getElementById("anon").value.trim();
+  const customTables = document.getElementById("tables").value.trim();
+  const tables = customTables
+    ? customTables.split(/[,\s]+/).filter(Boolean)
+    : COMMON_TABLES;
+
+  if (!url || !anon) {
+    alert("Project URL and anon key are both required.");
+    return;
+  }
+  if (!url.includes("supabase.co") && !url.includes("supabase.in")) {
+    if (!confirm("That URL doesn't look like a Supabase project. Continue anyway?")) return;
+  }
+
+  const btn = document.getElementById("scan");
+  btn.disabled = true;
+  btn.innerText = "Scanning...";
+
+  const resultsDiv = document.getElementById("results");
+  const findingsDiv = document.getElementById("findings");
+  const summaryDiv = document.getElementById("summary");
+  resultsDiv.classList.remove("hidden");
+  findingsDiv.innerHTML = "";
+  summaryDiv.innerHTML = `<div class="text-sm text-slate-300">Probing ${tables.length} tables anonymously...</div>`;
+
+  let leaked = 0, blocked = 0, errors = 0;
+  const findings = [];
+
+  for (const table of tables) {
+    try {
+      const r = await fetch(`${url}/rest/v1/${encodeURIComponent(table)}?select=*&limit=1`, {
+        headers: { "apikey": anon, "Authorization": `Bearer ${anon}` }
+      });
+      const status = r.status;
+      const body = await r.text();
+      let rows = [];
+      try { rows = JSON.parse(body); } catch {}
+      if (status === 200 && Array.isArray(rows)) {
+        if (rows.length > 0) {
+          leaked++;
+          findings.push({ table, status, rowCount: rows.length, columns: Object.keys(rows[0] || {}), bytes: body.length });
+        } else {
+          // empty array = table accessible but no rows. Still a leak surface.
+          leaked++;
+          findings.push({ table, status, rowCount: 0, columns: [], bytes: body.length, note: "table accessible (empty)" });
+        }
+      } else if (status === 401 || status === 403) {
+        blocked++;
+      } else if (status === 404 || status === 406) {
+        // table doesn't exist or schema unknown — not a finding
+      } else {
+        errors++;
+      }
+    } catch (e) {
+      errors++;
+    }
+    summaryDiv.innerHTML = `<div class="text-sm text-slate-300">${leaked} leaked / ${blocked} blocked / ${errors} errors so far...</div>`;
+  }
+
+  // Render findings
+  if (findings.length === 0) {
+    summaryDiv.innerHTML = `<div class="bg-emerald-900/40 border border-emerald-500/40 p-4 rounded-lg">
+      <strong>Good news:</strong> none of the ${tables.length} probed tables returned rows to the anon key. Either RLS is enforced, or the tables don't exist.
+      <div class="text-xs text-slate-300 mt-2">${blocked} tables actively blocked the request (RLS working). ${errors} requests errored (likely network). The remaining returned 404 — table doesn't exist with that name.</div>
+    </div>`;
+  } else {
+    summaryDiv.innerHTML = `<div class="bg-red-900/50 border border-red-500/50 p-4 rounded-lg">
+      <strong class="text-red-200">${findings.length} table(s) accessible without auth.</strong>
+      <div class="text-sm text-slate-300 mt-1">${blocked} other probes were properly blocked by RLS.</div>
+    </div>`;
+    findingsDiv.innerHTML = findings.map(f => `
+      <div class="bg-red-950/40 border-l-4 border-red-500 p-4 rounded">
+        <div class="font-bold text-red-200">▸ ${f.table}</div>
+        <div class="text-xs text-slate-300 mt-1">HTTP ${f.status} · ${f.rowCount} row(s) returned · ${f.bytes} bytes${f.note ? " · " + f.note : ""}</div>
+        ${f.columns.length ? `<div class="text-xs text-slate-400 mt-1">Columns visible: <code>${f.columns.join(", ")}</code></div>` : ""}
+      </div>
+    `).join("");
+  }
+
+  btn.disabled = false;
+  btn.innerText = "Scan again";
+});
+</script>
+
+</body>
+</html>
