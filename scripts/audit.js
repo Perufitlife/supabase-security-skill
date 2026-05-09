@@ -45,6 +45,31 @@ const CHECKS = {
     title: "Signups enabled without email confirmation",
     explain: "Anyone can create accounts and bypass email-gated logic.",
   },
+  realtime_publication_no_rls: {
+    severity: "critical",
+    title: "Table in supabase_realtime publication WITHOUT RLS",
+    explain: "Realtime sends row changes over WebSockets to anyone subscribed with the anon key. RLS policies are checked, but with RLS disabled there's nothing to check. Every INSERT/UPDATE is broadcast.",
+  },
+  anonymous_signins_enabled: {
+    severity: "high",
+    title: "Anonymous sign-ins enabled",
+    explain: "Anyone can become an 'authenticated' user without email verification. Defeats `auth.uid() IS NOT NULL` style RLS policies.",
+  },
+  weak_password_policy: {
+    severity: "medium",
+    title: "Weak password policy",
+    explain: "Minimum length below 8 characters. Use at least 8 + complexity requirements (digits/symbols).",
+  },
+  no_captcha_on_auth: {
+    severity: "medium",
+    title: "No CAPTCHA on auth endpoints",
+    explain: "Without CAPTCHA, signup/login forms can be brute-forced or spammed by bots.",
+  },
+  function_no_search_path: {
+    severity: "medium",
+    title: "SECURITY DEFINER function without SET search_path",
+    explain: "Function with mutable search_path can be hijacked: an attacker with CREATE on any schema in the path can shadow built-in functions and run arbitrary code as the function owner.",
+  },
 };
 
 async function sql(token, ref, query) {
@@ -132,7 +157,7 @@ async function audit(token, ref) {
     }
   }
 
-  // 2. SECURITY DEFINER functions executable by anon
+  // 2. SECURITY DEFINER functions: executable-by-anon AND missing search_path
   const funcs = await sql(
     token,
     ref,
@@ -140,7 +165,8 @@ async function audit(token, ref) {
        p.proname AS function_name,
        p.prosecdef AS security_definer,
        pg_get_function_result(p.oid) AS return_type,
-       has_function_privilege('anon', p.oid, 'EXECUTE') AS anon_execute
+       has_function_privilege('anon', p.oid, 'EXECUTE') AS anon_execute,
+       p.proconfig AS config
      FROM pg_proc p
      JOIN pg_namespace n ON n.oid = p.pronamespace
      WHERE n.nspname = 'public' AND p.prosecdef = true;`
@@ -156,6 +182,40 @@ async function audit(token, ref) {
         target: f.function_name,
         details: { returns: f.return_type },
         fix_sql: `REVOKE EXECUTE ON FUNCTION public.${f.function_name} FROM anon;`,
+      });
+    }
+    // SECURITY DEFINER without SET search_path = path-injection vector
+    const hasSearchPath = Array.isArray(f.config) && f.config.some((c) => typeof c === "string" && c.toLowerCase().startsWith("search_path="));
+    if (!hasSearchPath) {
+      findings.push({
+        check: "function_no_search_path",
+        ...CHECKS.function_no_search_path,
+        target: f.function_name,
+        details: { returns: f.return_type, current_config: f.config },
+        fix_sql: `ALTER FUNCTION public.${f.function_name} SET search_path = public, pg_temp;`,
+      });
+    }
+  }
+
+  // 2b. Realtime publication: tables exposed via supabase_realtime WebSocket
+  let realtimeTables = [];
+  try {
+    realtimeTables = await sql(
+      token,
+      ref,
+      `SELECT tablename FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND schemaname = 'public';`
+    );
+  } catch { /* publication may not exist */ }
+  const tableRlsMap = new Map(tables.map((t) => [t.table_name, t.rls_enabled]));
+  for (const rt of realtimeTables) {
+    const rls = tableRlsMap.get(rt.tablename);
+    if (rls === false) {
+      findings.push({
+        check: "realtime_publication_no_rls",
+        ...CHECKS.realtime_publication_no_rls,
+        target: rt.tablename,
+        details: { in_publication: "supabase_realtime", rls_enabled: false },
+        fix_sql: `ALTER TABLE public.${rt.tablename} ENABLE ROW LEVEL SECURITY;\n-- Or remove from publication: ALTER PUBLICATION supabase_realtime DROP TABLE public.${rt.tablename};`,
       });
     }
   }
@@ -228,16 +288,45 @@ async function audit(token, ref) {
     }
   }
 
-  // 5. Auth config: signups + email confirmation
+  // 5. Auth config — multiple checks
   const authCfg = await getAuthConfig(token, ref);
-  if (authCfg && authCfg.disable_signup === false && authCfg.mailer_autoconfirm === true) {
-    findings.push({
-      check: "auth_signups_enabled_no_confirm",
-      ...CHECKS.auth_signups_enabled_no_confirm,
-      target: "auth:signups",
-      details: { signups_enabled: true, autoconfirm: true },
-      fix_sql: `-- Update via Supabase dashboard: Auth → Providers → Email → enable "Confirm email"\n-- Or via Management API: PATCH /v1/projects/${ref}/config/auth { "mailer_autoconfirm": false }`,
-    });
+  if (authCfg) {
+    if (authCfg.disable_signup === false && authCfg.mailer_autoconfirm === true) {
+      findings.push({
+        check: "auth_signups_enabled_no_confirm",
+        ...CHECKS.auth_signups_enabled_no_confirm,
+        target: "auth:signups",
+        details: { signups_enabled: true, autoconfirm: true },
+        fix_sql: `-- Dashboard: Auth -> Providers -> Email -> "Confirm email" = ON\n-- API: PATCH /v1/projects/${ref}/config/auth body {"mailer_autoconfirm": false}`,
+      });
+    }
+    if (authCfg.external_anonymous_users_enabled === true) {
+      findings.push({
+        check: "anonymous_signins_enabled",
+        ...CHECKS.anonymous_signins_enabled,
+        target: "auth:anonymous",
+        details: { external_anonymous_users_enabled: true },
+        fix_sql: `-- Dashboard: Auth -> Providers -> Anonymous Sign-Ins = OFF\n-- API: PATCH /v1/projects/${ref}/config/auth body {"external_anonymous_users_enabled": false}`,
+      });
+    }
+    if (typeof authCfg.password_min_length === "number" && authCfg.password_min_length < 8) {
+      findings.push({
+        check: "weak_password_policy",
+        ...CHECKS.weak_password_policy,
+        target: "auth:password",
+        details: { password_min_length: authCfg.password_min_length, password_required_characters: authCfg.password_required_characters },
+        fix_sql: `-- Dashboard: Auth -> Providers -> Email -> "Minimum password length" >= 8\n-- API: PATCH /v1/projects/${ref}/config/auth body {"password_min_length": 12, "password_required_characters": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()"}`,
+      });
+    }
+    if (authCfg.security_captcha_enabled === false && authCfg.disable_signup === false) {
+      findings.push({
+        check: "no_captcha_on_auth",
+        ...CHECKS.no_captcha_on_auth,
+        target: "auth:captcha",
+        details: { security_captcha_enabled: false },
+        fix_sql: `-- Dashboard: Auth -> Settings -> Enable CAPTCHA (hCaptcha or Cloudflare Turnstile)\n-- API: PATCH /v1/projects/${ref}/config/auth body {"security_captcha_enabled": true, "security_captcha_provider": "hcaptcha", "security_captcha_secret": "<your_secret>"}`,
+      });
+    }
   }
 
   // Sort findings by severity
