@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Supabase Security Audit · $99 · 24h Delivery — Renzo Madueno</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Professional Supabase security audit. Detects RLS leaks, exposed SECURITY DEFINER functions, public buckets. Active probe confirms each leak live with the anon key. HTML report + fix SQL. $99 one-time.">
+<meta property="og:title" content="Supabase Security Audit — $99, 24h delivery">
+<meta property="og:description" content="I'll audit your Supabase project for security leaks. HTML report + fix SQL on every finding. Active probe proves the leak live before flagging it.">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white font-sans min-h-screen">
+<div class="max-w-3xl mx-auto px-6 py-12">
+
+  <div class="text-center mb-12">
+    <div class="inline-block bg-emerald-700 text-emerald-100 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded mb-6">Live audit · 24h delivery · Active probe confirms every leak</div>
+    <h1 class="text-5xl font-extrabold mb-4 leading-tight">I'll audit your Supabase project for security leaks. <span class="text-emerald-400">$99.</span></h1>
+    <p class="text-xl text-slate-300 max-w-2xl mx-auto">I scanned my own production project last week and found 17 publicly readable tables I had no idea about. <strong>b2b_leads</strong>, <strong>engagement_emails</strong>, internal growth metrics — anyone with the anon key from the JS bundle could read or delete them. I'll do the same scan for yours.</p>
+  </div>
+
+  <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-8 mb-8">
+    <h2 class="text-2xl font-bold mb-6 text-emerald-400">What you get</h2>
+    <ul class="space-y-4 text-slate-200">
+      <li class="flex gap-3"><span class="text-emerald-400">→</span><div><strong>Self-contained HTML report</strong> — letter grade (A+ to F), severity-ranked findings, charts. Open in any browser. Forward to your team.</div></li>
+      <li class="flex gap-3"><span class="text-emerald-400">→</span><div><strong>Active probe on every finding</strong> — I don't just say "this looks exposed." I fetch the data live with the anon key from your JS bundle and show you the rows it pulled. No guessing.</div></li>
+      <li class="flex gap-3"><span class="text-emerald-400">→</span><div><strong>Copy-paste fix SQL on every finding</strong> — <code class="bg-slate-900 px-2 py-1 rounded text-xs">ALTER TABLE … ENABLE RLS</code>, <code class="bg-slate-900 px-2 py-1 rounded text-xs">REVOKE ALL ON … FROM anon</code>, <code class="bg-slate-900 px-2 py-1 rounded text-xs">ALTER FUNCTION … SET search_path</code>. Paste into the Supabase SQL editor.</div></li>
+      <li class="flex gap-3"><span class="text-emerald-400">→</span><div><strong>"Apply all" SQL bundle</strong> — single transaction at the bottom of the report. Run it inside <code class="bg-slate-900 px-2 py-1 rounded text-xs">BEGIN; … ROLLBACK;</code> first to verify, then commit.</div></li>
+      <li class="flex gap-3"><span class="text-emerald-400">→</span><div><strong>11+ checks</strong> — RLS gaps, SECURITY DEFINER functions executable by anon, default privileges leaking on future tables, public storage buckets, weak password policy, missing CAPTCHA, anonymous sign-ins enabled, realtime publication leaking via WebSocket, search_path injection vectors.</div></li>
+      <li class="flex gap-3"><span class="text-emerald-400">→</span><div><strong>24h delivery</strong> by email. Most projects scan in &lt;60 seconds. Reading the report and confirming intentional exposures takes the rest.</div></li>
+    </ul>
+  </div>
+
+  <div class="bg-emerald-700 rounded-2xl p-8 mb-8 text-center">
+    <div class="text-emerald-100 text-sm uppercase font-bold tracking-wider mb-2">One-time payment</div>
+    <div class="text-7xl font-black mb-1">$99</div>
+    <div class="text-emerald-200 mb-6">USD · Stripe · No subscription · Money-back if I find nothing real</div>
+    <a href="https://buy.stripe.com/8x2cN56HK2wi3ihf5EcAo08" class="inline-block bg-white text-emerald-700 font-bold text-lg px-8 py-4 rounded-xl shadow-xl hover:bg-emerald-50 transition">Pay $99 → start audit</a>
+    <div class="text-emerald-200 text-xs mt-4">After payment: you'll get an email asking for a Supabase Personal Access Token (read-only is fine — a 30-second flow). I never ask for service-role keys.</div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-5">
+      <div class="text-emerald-400 font-bold mb-2">Why now?</div>
+      <p class="text-sm text-slate-300">On <strong>October 30, 2026</strong>, Supabase enforces the new default that tables in <code>public</code> no longer auto-expose to the Data API on EXISTING projects. If you've been on Supabase &gt;6 months, you almost certainly have leaky tables right now. After Oct 30 your app may break in unexpected ways if you don't audit and fix proactively.</p>
+    </div>
+    <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-5">
+      <div class="text-emerald-400 font-bold mb-2">Why me?</div>
+      <p class="text-sm text-slate-300">I built and shipped <a href="https://github.com/Perufitlife/supabase-security-skill" class="text-emerald-400 underline">supabase-security</a> (open source MIT) — the only auditor with active anon-key probe + MCP server for AI coding agents. SaaS competitors charge $49–499/month for what's essentially metadata reads. This is the manual + faster version of that, run by me directly.</p>
+    </div>
+  </div>
+
+  <div class="bg-slate-800/40 border border-slate-700 rounded-xl p-6 mb-8 text-sm text-slate-300">
+    <div class="text-slate-100 font-bold mb-2">FAQ</div>
+    <p class="mb-3"><strong>What permissions do you need?</strong> A Supabase Personal Access Token from <code>supabase.com/dashboard/account/tokens</code>. Read access is enough for the audit (the auditor never writes to your project).</p>
+    <p class="mb-3"><strong>Will you keep the token?</strong> No. Used only for the audit run. Deleted from my machine after the report is delivered. You can rotate it the moment you receive the report.</p>
+    <p class="mb-3"><strong>What if you find nothing?</strong> Money-back. I've never run this on a project that's been live &gt;6 months and found zero issues, but if it happens to you, you don't pay.</p>
+    <p class="mb-3"><strong>Do you offer the fix too?</strong> The report ships with copy-paste SQL on every finding. If you want me to <em>apply</em> the fixes for you, that's a separate $199 add-on (we'll discuss after you see the report).</p>
+    <p><strong>I'd rather just use the open-source tool.</strong> Go ahead — <a href="https://github.com/Perufitlife/supabase-security-skill" class="text-emerald-400 underline">github.com/Perufitlife/supabase-security-skill</a>. The $99 saves you the install + interpretation + writing the executive summary for your team. Worth it for some, not for others.</p>
+  </div>
+
+  <div class="text-center text-slate-500 text-xs mt-12">
+    Built by <a href="https://github.com/Perufitlife" class="text-emerald-400 underline">@Perufitlife</a> · Sibling open-source tools: <a href="https://github.com/Perufitlife/supabase-security-mcp" class="text-emerald-400 underline">MCP server</a> · <a href="https://github.com/Perufitlife/pocketbase-security-skill" class="text-emerald-400 underline">PocketBase auditor</a> · <a href="https://github.com/Perufitlife/appwrite-security-skill" class="text-emerald-400 underline">Appwrite auditor</a>
+  </div>
+</div>
+</body>
+</html>
