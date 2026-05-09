@@ -1,6 +1,8 @@
 # supabase-security
 
-> Audit and harden any Supabase project. Local-only, no SaaS, your token never leaves your machine.
+> Audit and harden any Supabase project. Local-only, no SaaS, your token never leaves your machine. **v0.3 ships with active anon-key probe — confirms each leak live, not just inferred.**
+
+> ⚡ Want me to run it for you and send back a written report? **$99, 24h delivery →** https://perufitlife.github.io/supabase-security-skill/
 
 ```
 $ supabase-security <project-ref> --html report.html
