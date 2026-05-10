@@ -4,7 +4,7 @@
 
 > ▶ **Run it without installing anything →** [apify.com/renzomacar/supabase-security-auditor](https://apify.com/renzomacar/supabase-security-auditor) (paste project ref + PAT, get HTML report)
 
-> ⚡ Want me to run it for you and send back a written report? **$99, 24h delivery →** https://perufitlife.github.io/supabase-security-skill/ (one landing covers all five — Supabase, PocketBase, Appwrite, Hasura, Firebase)
+> ⚡ **Want me to run it for you?** Tiers from **$5 single-fix bundle → $99 full report → $249 multi-tenant audit** — [perufitlife.github.io/supabase-security-skill](https://perufitlife.github.io/supabase-security-skill/) (one landing covers all five — Supabase, PocketBase, Appwrite, Hasura, Firebase)
 
 ```
 $ supabase-security <project-ref> --html report.html
