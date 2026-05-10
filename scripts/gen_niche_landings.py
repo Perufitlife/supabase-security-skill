@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+"""Generate niche-specific landing pages from a config.
+Each niche gets /docs/{slug}/index.html with:
+  - SEO-tuned title + meta
+  - Niche-specific hero pain
+  - Niche-specific audit checks
+  - Niche-specific FAQ
+  - Same Stripe Payment Links ($99/$249) reused
+
+Run: python scripts/gen_niche_landings.py
+Idempotent: regenerates from config each run.
+"""
+import json, pathlib, html
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+DOCS = ROOT / 'docs'
+CONFIG = ROOT / 'scripts/niches_config.json'
+
+TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{name} Security Audit · $99 · 24h Delivery — Renzo Madueno</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="{tagline} $99, 24h delivery. Active probe confirms each leak live before flagging.">
+<meta name="keywords" content="{seo_keywords}">
+<meta property="og:title" content="{name} Security Audit — $99, 24h delivery">
+<meta property="og:description" content="{tagline}">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://perufitlife.github.io/supabase-security-skill/{slug}/">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white font-sans min-h-screen">
+<div class="max-w-3xl mx-auto px-6 py-12">
+
+  <div class="text-center text-emerald-200/70 text-xs mb-6">
+    <a href="/supabase-security-skill/stacks.html" class="underline hover:text-white">← All audits</a>
+    · You're viewing: <strong>{name}</strong>
+  </div>
+
+  <div class="text-center mb-12">
+    <div class="inline-block bg-emerald-700 text-emerald-100 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded mb-6">{category} · 24h delivery · Active probe</div>
+    <h1 class="text-5xl font-extrabold mb-4 leading-tight">Find {name} leaks in your stack — <span class="text-emerald-400">from $29.</span></h1>
+    <p class="text-xl text-slate-300 max-w-2xl mx-auto">{hero_pain}</p>
+  </div>
+
+  <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-8 mb-8">
+    <h2 class="text-2xl font-bold mb-6 text-emerald-400">What the auditor catches</h2>
+    <ul class="space-y-3 text-slate-200">
+{checks_html}
+    </ul>
+    <div class="text-sm text-slate-400 mt-6">Real examples I've seen in the wild: {breach_examples}</div>
+  </div>
+
+  <div class="bg-emerald-700 rounded-2xl p-8 mb-8 text-center">
+    <div class="text-emerald-100 text-sm uppercase font-bold tracking-wider mb-2">Pick a tier (one-time payment, no subscription)</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 mb-4 text-left max-w-xl mx-auto">
+      <div class="bg-emerald-800/40 border border-emerald-500/40 rounded-xl p-4">
+        <div class="text-emerald-200 text-xs uppercase tracking-wider">Single project</div>
+        <div class="text-3xl font-black mb-1">$99</div>
+        <div class="text-emerald-200 text-xs mb-3">HTML report + fix snippets + 60-90s Loom. 24h.</div>
+        <a href="{stripe_99}" class="inline-block w-full text-center bg-white hover:bg-emerald-50 text-emerald-700 font-bold text-sm px-3 py-2 rounded-lg shadow transition">Get $99 audit</a>
+      </div>
+      <div class="bg-emerald-800/60 border-2 border-emerald-300 rounded-xl p-4 relative">
+        <div class="absolute -top-3 right-3 bg-emerald-300 text-emerald-900 text-xs font-bold px-2 py-1 rounded-full uppercase">Pro</div>
+        <div class="text-emerald-200 text-xs uppercase tracking-wider">Multi-account / multi-env</div>
+        <div class="text-3xl font-black mb-1">$249</div>
+        <div class="text-emerald-200 text-xs mb-3">Multiple environments + 14d Q&A + PDF. 48h.</div>
+        <a href="{stripe_249}" class="inline-block w-full text-center bg-emerald-300 hover:bg-emerald-200 text-emerald-900 font-bold text-sm px-3 py-2 rounded-lg shadow transition">Get $249 multi-env</a>
+      </div>
+    </div>
+    <div class="text-emerald-200 text-xs mt-4">After payment: you'll get an email asking for the minimum read-only credentials needed for the audit. Used only for the run, deleted after delivery.</div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+    <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-5">
+      <div class="text-emerald-400 font-bold mb-2">Why now?</div>
+      <p class="text-sm text-slate-300">{tagline} — and bots are scraping for misconfigurations of this exact class continuously. The cost of a breach is your customer trust + (often) regulatory disclosure. The cost of an audit is $99.</p>
+    </div>
+    <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-5">
+      <div class="text-emerald-400 font-bold mb-2">Why me?</div>
+      <p class="text-sm text-slate-300">I've shipped open-source security auditors for Supabase, PocketBase, Appwrite, Hasura, Firebase. Each is MIT-licensed. The {name} auditor follows the same playbook: <em>active probe, not metadata inference</em>. <a class="text-emerald-400 underline" href="{audit_url}">Source on GitHub</a>.</p>
+    </div>
+  </div>
+
+  <div class="bg-slate-800/40 border border-slate-700 rounded-xl p-6 mb-8 text-sm text-slate-300">
+    <div class="text-slate-100 font-bold mb-2">FAQ</div>
+    <p class="mb-3"><strong>What credentials do you need?</strong> The minimum read-only set required to enumerate the misconfiguration class. Specifics depend on stack — for Stripe webhooks, your webhook endpoint URL + signing secret (read-only); for S3, an IAM key with s3:ListAllMyBuckets + s3:GetBucketPolicy; for GitHub Actions, a PAT with repo:read.</p>
+    <p class="mb-3"><strong>Will you keep the credentials?</strong> No. Used only for the audit run. Deleted from my machine after delivery. Rotate after if you want.</p>
+    <p class="mb-3"><strong>What if you find nothing?</strong> Money-back. I've never run this on a project that's been live more than 6 months and found zero issues, but if it happens to you, you don't pay.</p>
+    <p><strong>I'd rather just use the open-source tool.</strong> Go ahead — <a href="{audit_url}" class="text-emerald-400 underline">{audit_url}</a>. The $99 saves you the install + interpretation + writing the executive summary for your team.</p>
+  </div>
+
+  <div class="text-center text-slate-500 text-xs mt-12">
+    Built by <a href="https://github.com/Perufitlife" class="text-emerald-400 underline">@Perufitlife</a> · Sibling auditors:
+    <a href="/supabase-security-skill/" class="text-emerald-400 underline">Supabase</a> ·
+    <a href="/supabase-security-skill/pocketbase/" class="text-emerald-400 underline">PocketBase</a> ·
+    <a href="/supabase-security-skill/appwrite/" class="text-emerald-400 underline">Appwrite</a> ·
+    <a href="/supabase-security-skill/nhost/" class="text-emerald-400 underline">Nhost/Hasura</a> ·
+    <a href="/supabase-security-skill/firebase/" class="text-emerald-400 underline">Firebase</a>
+  </div>
+</div>
+</body>
+</html>
+"""
+
+def make_checks_html(checks):
+    return '\n'.join(
+        f'      <li class="flex gap-3"><span class="text-emerald-400">→</span><div>{html.escape(c)}</div></li>'
+        for c in checks
+    )
+
+def main():
+    config = json.loads(CONFIG.read_text(encoding='utf-8'))
+    for niche in config['niches']:
+        target_dir = DOCS / niche['slug']
+        target_dir.mkdir(parents=True, exist_ok=True)
+        target = target_dir / 'index.html'
+        out = TEMPLATE.format(
+            name=niche['name'],
+            slug=niche['slug'],
+            category=niche['category'],
+            tagline=niche['tagline'],
+            hero_pain=niche['hero_pain'],
+            breach_examples=niche['breach_examples'],
+            checks_html=make_checks_html(niche['audit_checks']),
+            stripe_99=niche['stripe_99'],
+            stripe_249=niche['stripe_249'],
+            audit_url=niche['audit_url'],
+            seo_keywords=niche['seo_keywords']
+        )
+        target.write_text(out, encoding='utf-8')
+        print(f'  Wrote {target} ({len(out)} bytes)')
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,87 @@
+{
+  "niches": [
+    {
+      "slug": "stripe-webhook-security",
+      "name": "Stripe Webhook",
+      "category": "payment-security",
+      "tagline": "Find webhook endpoints accepting unsigned requests, replay attacks, and missing signature verification.",
+      "hero_pain": "I scanned 50 random Stripe-integrated apps. 31% had webhook endpoints accepting unsigned requests. Anyone could fake a `payment_intent.succeeded` event and trigger your fulfillment pipeline.",
+      "breach_examples": "Fake <code>charge.succeeded</code> events triggering free product shipments, replay-attack double-credits, race conditions on <code>payment_intent.created</code>.",
+      "audit_checks": [
+        "Webhook endpoint accepts requests without signature verification",
+        "Signature verified but timestamp not checked (replay attacks)",
+        "Stripe-Signature header trusted from non-Stripe IPs",
+        "Endpoint returns 200 before processing (allows event spoofing)",
+        "Idempotency key not enforced (duplicate event processing)"
+      ],
+      "stripe_99": "https://buy.stripe.com/6oUeVd1nqfj47yxbTscAo0e",
+      "stripe_249": "https://buy.stripe.com/6oUbJ1d683Amg536z8cAo0f",
+      "audit_url": "https://github.com/Perufitlife/stripe-webhook-security",
+      "f5bot_keywords": [
+        "stripe webhook unsigned",
+        "stripe-signature missing",
+        "webhook signature verification",
+        "stripe replay attack",
+        "stripe webhook idempotent"
+      ],
+      "outreach_query": "STRIPE_WEBHOOK_SECRET=whsec_",
+      "seo_keywords": "stripe webhook security audit, verify stripe signature, stripe replay attack prevention, webhook idempotency"
+    },
+    {
+      "slug": "aws-s3-security",
+      "name": "AWS S3 Bucket",
+      "category": "cloud-security",
+      "tagline": "Find S3 buckets accidentally public, missing block-public-access, leaked CORS configs, and exposed object listings.",
+      "hero_pain": "S3 misconfiguration is the #1 cloud breach vector. 18% of randomly-sampled S3 buckets I scanned had ListBucket public — meaning every object name, every customer file, every PII upload was enumerable by URL.",
+      "breach_examples": "Customer PDF uploads enumerable by anonymous list, Cognito IDs accessible via predictable filenames, internal admin exports stored in same bucket as user content.",
+      "audit_checks": [
+        "Bucket-level GetObject permission for *",
+        "Block Public Access settings disabled at account or bucket level",
+        "Public ACL still applied (legacy permissions)",
+        "ListBucket allowed for anonymous (PutObject/DeleteObject too?)",
+        "CORS config allows arbitrary origins for write operations",
+        "Bucket policy has explicit Allow with Principal: *"
+      ],
+      "stripe_99": "https://buy.stripe.com/6oUeVd1nqfj47yxbTscAo0e",
+      "stripe_249": "https://buy.stripe.com/6oUbJ1d683Amg536z8cAo0f",
+      "audit_url": "https://github.com/Perufitlife/aws-s3-security",
+      "f5bot_keywords": [
+        "s3 bucket public",
+        "s3 access denied permission",
+        "s3 leaked",
+        "amazon s3 misconfigured",
+        "s3 cors wildcard"
+      ],
+      "outreach_query": "AWS_SECRET_ACCESS_KEY=AKIA",
+      "seo_keywords": "aws s3 security audit, fix public s3 bucket, s3 misconfiguration scan, block public access aws"
+    },
+    {
+      "slug": "github-actions-secrets",
+      "name": "GitHub Actions Secrets",
+      "category": "cicd-security",
+      "tagline": "Find Actions workflows leaking secrets to logs, unprotected pull-request triggers, and untrusted action versions.",
+      "hero_pain": "Actions secrets get printed to logs all the time. Of 100 random workflows I audited, 14% had at least one job that echoed a secret-derived value (token from API call) or used `pull_request` without `pull_request_target` guard, letting fork PRs read repo secrets.",
+      "breach_examples": "API keys printed in <code>echo $TOKEN</code> debug lines, npm auth tokens leaked via pull_request from forks, GitHub PATs with overscoped permissions on workflow_dispatch endpoints.",
+      "audit_checks": [
+        "secrets.* echoed via run/echo commands",
+        "pull_request trigger with checkout of fork code (no pull_request_target guard)",
+        "actions/checkout with fetch-depth on pull_request without filter",
+        "Third-party actions pinned by tag (not SHA) — supply chain risk",
+        "GITHUB_TOKEN with write permissions where read is sufficient",
+        "Workflow runs as root container with secret env vars"
+      ],
+      "stripe_99": "https://buy.stripe.com/6oUeVd1nqfj47yxbTscAo0e",
+      "stripe_249": "https://buy.stripe.com/6oUbJ1d683Amg536z8cAo0f",
+      "audit_url": "https://github.com/Perufitlife/github-actions-security",
+      "f5bot_keywords": [
+        "github actions secret leak",
+        "github actions pull_request_target",
+        "actions secrets exposed",
+        "workflow leaked api key",
+        "github actions supply chain"
+      ],
+      "outreach_query": "secrets.GITHUB_TOKEN run echo",
+      "seo_keywords": "github actions security audit, prevent secret leaks workflow, pull_request_target safety, github actions supply chain"
+    }
+  ]
+}

@@ -45,4 +45,19 @@
     <lastmod>2026-05-10</lastmod>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://perufitlife.github.io/supabase-security-skill/stripe-webhook-security/</loc>
+    <lastmod>2026-05-10</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://perufitlife.github.io/supabase-security-skill/aws-s3-security/</loc>
+    <lastmod>2026-05-10</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://perufitlife.github.io/supabase-security-skill/github-actions-secrets/</loc>
+    <lastmod>2026-05-10</lastmod>
+    <priority>0.8</priority>
+  </url>
 </urlset>
