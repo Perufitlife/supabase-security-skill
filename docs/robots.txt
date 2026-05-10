@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://perufitlife.github.io/supabase-security-skill/sitemap.xml
