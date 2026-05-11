@@ -85,6 +85,50 @@ CREATE POLICY "anon read public" ON public.your_table
 
   <p class="mb-6">If you'd rather have me run it for you, write up the findings, and stay on call for Q&A while you fix them, I do paid audits from $5 (Top-5 SQL fix bundle) to $249 (full multi-tenant audit + 14d Q&A). Pricing tiers and ordering: <a class="text-emerald-400 underline" href="/supabase-security-skill/">perufitlife.github.io/supabase-security-skill</a>.</p>
 
+  <div class="mt-12 mb-8 bg-red-950/30 border border-red-500/40 rounded-2xl p-6">
+    <div class="text-xs uppercase tracking-wider text-red-300 mb-2">Update — 11 May 2026</div>
+    <h2 class="text-2xl font-bold mb-4 font-sans text-red-300">I shipped <code class="text-base bg-slate-900 px-2 py-0.5 rounded">--discover</code> mode. Then I found 14 critical leaks in my own production CRM.</h2>
+
+    <p class="mb-4">This morning I shipped <code class="bg-slate-900 px-1.5 py-0.5 rounded text-emerald-300">--discover</code>, a keyless mode that walks your repo, pulls every table / RPC / bucket reference from <code>.from()</code> / <code>.rpc()</code> / <code>.storage.from()</code> call sites, cross-references migrations for CREATE TABLE / ENABLE RLS, then probes only the surface your app actually uses with the public anon key. No PAT, no admin token, no setup.</p>
+
+    <p class="mb-4">As the final QA test, I pointed it at my own production CRM (~50 tables, ~17 RPC functions, 1,742 source files).</p>
+
+    <p class="mb-4 font-bold text-red-200">It found 14 critical leaks:</p>
+
+    <ul class="list-disc pl-6 mb-4 space-y-1">
+      <li><strong>7 tables</strong> returning rows to anonymous callers (courier data, bot knowledge base, product variants, zone analytics — internal business data)</li>
+      <li><strong>6 SECURITY DEFINER functions</strong> executable by anon (dashboard stats, courier metrics, daily KPIs, the whole analytics surface)</li>
+      <li><strong>2 storage buckets</strong> listable by anon (chat media + product assets)</li>
+    </ul>
+
+    <p class="mb-4">Every one of them had RLS technically "enabled". Every SELECT policy was <code class="bg-slate-900 px-1.5 py-0.5 rounded">USING (true)</code> applied to roles <code class="bg-slate-900 px-1.5 py-0.5 rounded">{-}</code> — which in Postgres means "everyone, anon included". Server-side code uses service_role and bypasses RLS, so nothing broke internally. Client-side reads were never wired up. The only callers were... anyone on the internet with the anon key, which lives in the JS bundle.</p>
+
+    <p class="mb-4">Generated SQL fix, applied via the Supabase Management API:</p>
+
+    <pre class="bg-slate-950 border border-slate-700 rounded-lg p-4 text-xs overflow-x-auto mb-4"><code>DROP POLICY IF EXISTS bot_knowledge_base_select ON public.bot_knowledge_base;
+CREATE POLICY bot_knowledge_base_select ON public.bot_knowledge_base
+  FOR SELECT TO authenticated USING (true);
+-- repeat for 6 more tables
+
+REVOKE EXECUTE ON FUNCTION public.get_dashboard_stats() FROM anon, public;
+GRANT  EXECUTE ON FUNCTION public.get_dashboard_stats() TO authenticated;
+-- repeat for 5 more functions</code></pre>
+
+    <p class="mb-4">Re-ran <code class="bg-slate-900 px-1.5 py-0.5 rounded text-emerald-300">--discover</code>. 14 → 0.</p>
+
+    <p class="mb-4 font-bold text-red-200">Three things I'm sitting with:</p>
+    <ol class="list-decimal pl-6 mb-4 space-y-2">
+      <li>"RLS enabled" is not a state, it's a vibe. The actual question is who's in the <code class="bg-slate-900 px-1.5 py-0.5 rounded">polroles</code> and what the <code class="bg-slate-900 px-1.5 py-0.5 rounded">USING</code> expression evaluates to. <strong>The Supabase dashboard's green checkmark only tells you the first half.</strong></li>
+      <li>Tools that don't catch yourself aren't done. I wrote the check for this exact pattern six weeks ago. I was still vulnerable. Static-from-migrations alone misses it (the migrations look fine). You need to actually fire an HTTP request with the public anon key and see what comes back.</li>
+      <li>The under-priced risk on Supabase isn't leaked emails. It's RPC functions with SECURITY DEFINER + EXECUTE granted to anon. My CRM had 6 of those open — anyone could call them and get back admin-level data, no auth needed. Most scanners don't even look at RPCs.</li>
+    </ol>
+
+    <p class="mb-2">If you ship on Supabase, this is 30 seconds:</p>
+    <pre class="bg-slate-950 border border-slate-700 rounded-lg p-4 text-sm mb-4"><code class="text-emerald-300">npx supabase-security@latest --discover .</code></pre>
+
+    <p class="text-sm text-slate-400 italic">First time the tool felt like it actually pulled its weight was when it pointed back at me. Mildly humbling.</p>
+  </div>
+
   <h2 class="text-2xl font-bold mt-12 mb-4 font-sans text-emerald-400">If you take one thing from this post</h2>
 
   <p class="mb-6">Don't trust the metadata. Don't trust the "RLS enabled" checkmark on the dashboard. Issue an actual anonymous SELECT against your tables and see what comes back. If it's anything other than nothing, you've got work to do.</p>
