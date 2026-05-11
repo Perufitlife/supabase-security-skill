@@ -1,0 +1,105 @@
+name: 'Supabase Security Audit'
+description: 'Audit your Supabase project for RLS leaks, exposed buckets, anon-readable tables. Active anon-key probe confirms each finding live.'
+author: 'Renzo Madueno (@Perufitlife)'
+branding:
+  icon: 'shield'
+  color: 'green'
+
+inputs:
+  project-ref:
+    description: 'Supabase project reference (the subdomain in your *.supabase.co URL)'
+    required: true
+  pat:
+    description: 'Supabase Personal Access Token (read-only is enough). Generate at https://supabase.com/dashboard/account/tokens'
+    required: true
+  anon-key:
+    description: 'Anon (public) key for active probe. Optional — without it, audit is metadata-only.'
+    required: false
+  output-path:
+    description: 'Path for the HTML report'
+    required: false
+    default: 'supabase-security-report.html'
+  fail-on:
+    description: 'Severity to fail the workflow on: critical, high, medium, low, never'
+    required: false
+    default: 'critical'
+  webhook-url:
+    description: 'Optional webhook to POST findings to (e.g., RLS Monitor)'
+    required: false
+  webhook-token:
+    description: 'Optional bearer token for the webhook'
+    required: false
+
+outputs:
+  critical-count:
+    description: 'Number of CRITICAL findings'
+    value: ${{ steps.scan.outputs.critical }}
+  high-count:
+    description: 'Number of HIGH findings'
+    value: ${{ steps.scan.outputs.high }}
+  grade:
+    description: 'Letter grade (A+ to F)'
+    value: ${{ steps.scan.outputs.grade }}
+  report-path:
+    description: 'Path of the generated HTML report'
+    value: ${{ inputs.output-path }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Run supabase-security audit
+      id: scan
+      shell: bash
+      env:
+        SUPABASE_PROJECT_REF: ${{ inputs.project-ref }}
+        SUPABASE_PAT: ${{ inputs.pat }}
+        SUPABASE_ANON_KEY: ${{ inputs.anon-key }}
+        OUTPUT_PATH: ${{ inputs.output-path }}
+        FAIL_ON: ${{ inputs.fail-on }}
+      run: |
+        echo "::group::Running supabase-security@latest"
+        npx -y supabase-security@latest "$SUPABASE_PROJECT_REF" \
+          --pat "$SUPABASE_PAT" \
+          ${SUPABASE_ANON_KEY:+--anon-key "$SUPABASE_ANON_KEY"} \
+          --html "$OUTPUT_PATH" \
+          --json findings.json
+        echo "::endgroup::"
+
+        # Parse counts + grade for outputs
+        CRIT=$(jq '[.findings[] | select(.severity=="critical")] | length' findings.json)
+        HIGH=$(jq '[.findings[] | select(.severity=="high")] | length' findings.json)
+        GRADE=$(jq -r '.grade // "?"' findings.json)
+        echo "critical=$CRIT" >> $GITHUB_OUTPUT
+        echo "high=$HIGH" >> $GITHUB_OUTPUT
+        echo "grade=$GRADE" >> $GITHUB_OUTPUT
+        echo "::notice title=Supabase Security::Grade $GRADE — $CRIT critical, $HIGH high"
+
+        # Apply fail-on policy
+        case "$FAIL_ON" in
+          critical) [[ "$CRIT" -gt 0 ]] && exit 1 ;;
+          high)     [[ $((CRIT + HIGH)) -gt 0 ]] && exit 1 ;;
+          never)    ;;
+        esac
+        exit 0
+
+    - name: POST findings to webhook (optional)
+      if: ${{ inputs.webhook-url != '' }}
+      shell: bash
+      run: |
+        curl -sS -X POST "${{ inputs.webhook-url }}" \
+          -H "Content-Type: application/json" \
+          ${{ inputs.webhook-token && format('-H "Authorization: Bearer {0}"', inputs.webhook-token) || '' }} \
+          --data-binary @findings.json
+        echo "Findings posted to webhook."
+
+    - name: Upload HTML report artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: supabase-security-report
+        path: ${{ inputs.output-path }}
+        retention-days: 14
