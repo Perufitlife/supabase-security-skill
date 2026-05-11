@@ -9,12 +9,9 @@ inputs:
   project-ref:
     description: 'Supabase project reference (the subdomain in your *.supabase.co URL)'
     required: true
-  pat:
+  token:
     description: 'Supabase Personal Access Token (read-only is enough). Generate at https://supabase.com/dashboard/account/tokens'
     required: true
-  anon-key:
-    description: 'Anon (public) key for active probe. Optional — without it, audit is metadata-only.'
-    required: false
   output-path:
     description: 'Path for the HTML report'
     required: false
@@ -56,24 +53,23 @@ runs:
       id: scan
       shell: bash
       env:
-        SUPABASE_PROJECT_REF: ${{ inputs.project-ref }}
-        SUPABASE_PAT: ${{ inputs.pat }}
-        SUPABASE_ANON_KEY: ${{ inputs.anon-key }}
+        PROJECT_REF: ${{ inputs.project-ref }}
+        SUPABASE_ACCESS_TOKEN: ${{ inputs.token }}
         OUTPUT_PATH: ${{ inputs.output-path }}
         FAIL_ON: ${{ inputs.fail-on }}
       run: |
         echo "::group::Running supabase-security@latest"
-        npx -y supabase-security@latest "$SUPABASE_PROJECT_REF" \
-          --pat "$SUPABASE_PAT" \
-          ${SUPABASE_ANON_KEY:+--anon-key "$SUPABASE_ANON_KEY"} \
+        npx -y supabase-security@latest "$PROJECT_REF" \
           --html "$OUTPUT_PATH" \
-          --json findings.json
+          > findings.json
         echo "::endgroup::"
 
         # Parse counts + grade for outputs
         CRIT=$(jq '[.findings[] | select(.severity=="critical")] | length' findings.json)
         HIGH=$(jq '[.findings[] | select(.severity=="high")] | length' findings.json)
-        GRADE=$(jq -r '.grade // "?"' findings.json)
+        # Compute grade from score (mirroring report.js logic)
+        SCORE=$(jq '.summary.score // 100' findings.json)
+        GRADE=$(awk -v s="$SCORE" 'BEGIN{ if(s>=95)print "A+"; else if(s>=85)print "A"; else if(s>=70)print "B"; else if(s>=50)print "C"; else if(s>=30)print "D"; else print "F" }')
         echo "critical=$CRIT" >> $GITHUB_OUTPUT
         echo "high=$HIGH" >> $GITHUB_OUTPUT
         echo "grade=$GRADE" >> $GITHUB_OUTPUT
