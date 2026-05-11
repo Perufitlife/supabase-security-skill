@@ -11,7 +11,7 @@
 > - uses: Perufitlife/supabase-security-skill@v1.0.0-action
 >   with:
 >     project-ref: ${{ vars.SUPABASE_PROJECT_REF }}
->     pat: ${{ secrets.SUPABASE_PAT }}
+>     token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 >     fail-on: critical
 > ```
 >
