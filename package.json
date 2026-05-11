@@ -1,6 +1,6 @@
 {
   "name": "supabase-security",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Audit Supabase security issues (RLS, grants, exposed functions) AND prove leaks live via active anon-key probe. Other auditors infer; this one fetches and shows the bytes leaked.",
   "type": "module",
   "bin": {
@@ -12,7 +12,14 @@
     "remediate": "node scripts/remediate.js",
     "postinstall": "node scripts/postinstall.js || true"
   },
-  "keywords": ["supabase", "security", "rls", "audit", "postgres", "ai-skill"],
+  "keywords": [
+    "supabase",
+    "security",
+    "rls",
+    "audit",
+    "postgres",
+    "ai-skill"
+  ],
   "author": "Renzo Madueno (@Perufitlife)",
   "license": "MIT",
   "repository": {

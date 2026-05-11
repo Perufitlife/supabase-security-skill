@@ -421,15 +421,45 @@ async function audit(token, ref, opts = {}) {
 // CLI
 async function main() {
   const args = process.argv.slice(2);
-  if (args.length === 0 || args.includes("--help") || args.includes("-h")) {
-    console.error(`Usage: SUPABASE_ACCESS_TOKEN=sbp_xxx supabase-security <project-ref> [--json|--html report.html] [--no-probe]\n\n--no-probe    skip the active anon probe (default: probe ON; we hit the public API to PROVE leaks, not just infer)`);
+  if (args.includes("--help") || args.includes("-h") || (args.length === 0)) {
+    console.error(`Usage:
+  Full audit (needs Personal Access Token):
+    SUPABASE_ACCESS_TOKEN=sbp_xxx supabase-security <project-ref> [--json|--html report.html] [--no-probe]
+
+  Keyless discover (parses local repo, probes only with public anon key — no admin):
+    supabase-security --discover [path]            # path defaults to cwd
+    supabase-security --discover . --json
+    supabase-security --discover . --html discover-report.html
+
+--no-probe    skip the active anon probe (default ON in full mode)
+--discover    static repo scan + anon-only probe; no PAT required`);
     process.exit(1);
+  }
+
+  // --discover mode (v0.4): no PAT required, parses repo + probes anonymously.
+  if (args.includes("--discover")) {
+    const { discover } = await import("./discover.js");
+    const idx = args.indexOf("--discover");
+    const path = args[idx + 1] && !args[idx + 1].startsWith("--") ? args[idx + 1] : process.cwd();
+    const result = await discover({ root: path });
+
+    const htmlIdx = args.indexOf("--html");
+    if (htmlIdx !== -1) {
+      const out = args[htmlIdx + 1] || "discover-report.html";
+      const { renderHtml } = await import("./report.js");
+      writeFileSync(out, renderHtml(result));
+      console.error(`Discover report written to ${out}`);
+    }
+    console.log(JSON.stringify(result, null, 2));
+    return;
   }
 
   const ref = args[0];
   const token = process.env.SUPABASE_ACCESS_TOKEN || (args.includes("--token") ? args[args.indexOf("--token") + 1] : null);
   if (!token) {
     console.error("Error: provide SUPABASE_ACCESS_TOKEN env var or --token flag (Personal Access Token from supabase.com/dashboard/account/tokens)");
+    console.error("\nTip: try --discover for a keyless scan of your local repo:");
+    console.error("  supabase-security --discover .");
     process.exit(1);
   }
   const activeProbe = !args.includes("--no-probe");
