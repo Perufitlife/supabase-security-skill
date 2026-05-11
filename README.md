@@ -6,6 +6,15 @@
 
 > ⚡ **Want me to run it for you?** Tiers from **$5 single-fix bundle → $99 full report → $249 multi-tenant audit** — [perufitlife.github.io/supabase-security-skill](https://perufitlife.github.io/supabase-security-skill/) (one landing covers all five — Supabase, PocketBase, Appwrite, Hasura, Firebase)
 
+> 🤖 **Use it in GitHub Actions** — drop this into `.github/workflows/security.yml`:
+> ```yaml
+> - uses: Perufitlife/supabase-security-skill@v1.0.0-action
+>   with:
+>     project-ref: ${{ vars.SUPABASE_PROJECT_REF }}
+>     pat: ${{ secrets.SUPABASE_PAT }}
+>     fail-on: critical
+> ```
+>
 > 🔁 **Want this running on a cron?** [RLS Monitor](https://rls-monitor.vercel.app/) does weekly diff-based scans + email alerts when new findings appear — $29/mo, your keys never leave your CI.
 >
 > 📦 **Need all 5 BaaS stacks at once?** The [BaaS Security Pack](https://perufitlife.github.io/supabase-security-skill/pack.html) bundles every scanner + sample reports + fix-SQL libraries — one $99 download.
