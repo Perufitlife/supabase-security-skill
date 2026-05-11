@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tools I use to ship — Renzo Madueno</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Honest stack notes: every tool actually powering FitCRM, Rotatepilot, supabase-security, and 12 Apify actors. What I'd recommend, what I'd skip.">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white font-sans min-h-screen">
+<div class="max-w-3xl mx-auto px-6 py-12">
+
+  <div class="mb-6 text-xs"><a href="/supabase-security-skill/" class="text-emerald-400 underline">← back to main</a></div>
+
+  <h1 class="text-4xl font-extrabold mb-3">Tools I actually use.</h1>
+  <p class="text-slate-300 mb-8">No "ultimate stack" listicle. These are the things running in production for FitCRM (CRM + WhatsApp), Rotatepilot (aviation SaaS), supabase-security (this site), and 12 Apify scrapers. Honest take on each. Some links are referrals — clearly marked.</p>
+
+  <div class="grid grid-cols-1 gap-4">
+
+    <a href="https://supabase.com/dashboard/sign-up" class="group block bg-slate-800/60 border border-slate-700 hover:border-emerald-500/60 rounded-xl p-5 transition">
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-bold text-emerald-400">Supabase</div>
+        <div class="text-xs text-slate-500">Postgres + Auth + Storage + Realtime</div>
+      </div>
+      <p class="text-sm text-slate-300">Where every project lives. Free tier is generous; I pay $25/mo Pro on FitCRM and Rotatepilot. RLS surface area is the reason this site exists — powerful but easy to misconfigure.</p>
+    </a>
+
+    <a href="https://vercel.com/signup" class="group block bg-slate-800/60 border border-slate-700 hover:border-emerald-500/60 rounded-xl p-5 transition">
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-bold text-emerald-400">Vercel</div>
+        <div class="text-xs text-slate-500">Next.js hosting + crons + edge</div>
+      </div>
+      <p class="text-sm text-slate-300">Deploy in one command. Cron jobs are critical for nightly scans + drip emails. Watch the env-var trap — newlines in values silently break Resend/Anthropic calls (lost me a day, post-mortem in the blog).</p>
+    </a>
+
+    <a href="https://resend.com" class="group block bg-slate-800/60 border border-slate-700 hover:border-emerald-500/60 rounded-xl p-5 transition">
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-bold text-emerald-400">Resend</div>
+        <div class="text-xs text-slate-500">Transactional email API</div>
+      </div>
+      <p class="text-sm text-slate-300">Replaced Postmark. Deliverability is good, the API is one line. Hit a urllib 403 bug in Python — workaround was curl subprocess. 3k emails/mo on the free plan is plenty for indie scale.</p>
+    </a>
+
+    <a href="https://polar.sh" class="group block bg-slate-800/60 border border-slate-700 hover:border-emerald-500/60 rounded-xl p-5 transition">
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-bold text-emerald-400">Polar.sh</div>
+        <div class="text-xs text-slate-500">Stripe-alternative, dev-friendly billing</div>
+      </div>
+      <p class="text-sm text-slate-300">Eval-ing for the next product launch. Handles VAT/sales-tax globally without me touching it. Github Sponsors integration is the killer feature for open-source.</p>
+    </a>
+
+    <a href="https://apify.com" class="group block bg-slate-800/60 border border-slate-700 hover:border-emerald-500/60 rounded-xl p-5 transition">
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-bold text-emerald-400">Apify</div>
+        <div class="text-xs text-slate-500">Web scraping + actor marketplace</div>
+      </div>
+      <p class="text-sm text-slate-300">Where the BaaS security auditors run as "no install" public actors. Free runs for tire-kickers, paid platform for production. Marketplace pays out monthly — small but real recurring.</p>
+    </a>
+
+    <a href="https://www.anthropic.com/claude" class="group block bg-slate-800/60 border border-slate-700 hover:border-emerald-500/60 rounded-xl p-5 transition">
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-bold text-emerald-400">Claude (Anthropic)</div>
+        <div class="text-xs text-slate-500">AI coding agent</div>
+      </div>
+      <p class="text-sm text-slate-300">Pair-programmer + ops co-pilot. Wrote ~80% of the auditors with Claude Code. Token cost is the new server bill — budget for it.</p>
+    </a>
+
+    <a href="https://glama.ai" class="group block bg-slate-800/60 border border-slate-700 hover:border-emerald-500/60 rounded-xl p-5 transition">
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-bold text-emerald-400">Glama</div>
+        <div class="text-xs text-slate-500">MCP server discovery</div>
+      </div>
+      <p class="text-sm text-slate-300">If you're shipping MCP servers for AI agents, getting listed on Glama is the modern App Store. supabase-security-mcp lives there. Approval takes 1-2 rounds; submit the real MCP repo, not the CLI.</p>
+    </a>
+
+  </div>
+
+  <div class="mt-12 text-xs text-slate-500">
+    Disclosure: some of these links are referral or affiliate. Doesn't change the price you pay, occasionally throws me a few bucks. Tools listed because I actually use them — never paid placement.
+  </div>
+</div>
+</body>
+</html>
