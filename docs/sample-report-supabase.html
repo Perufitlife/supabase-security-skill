@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Supabase Security Report — rotate</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+  <div class="max-w-5xl mx-auto p-6">
+
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-emerald-700 to-teal-600 text-white p-8 rounded-lg shadow-lg mb-6">
+      <h1 class="text-3xl font-bold mb-2">Supabase Security Report</h1>
+      <p class="text-emerald-100"><strong>Project:</strong> rotate <span class="opacity-50">(wpqnaardeaqgvllichui)</span></p>
+      <p class="text-emerald-100"><strong>Region:</strong> us-east-1 &middot; <strong>Scanned:</strong> 5/12/2026, 5:48:18 AM</p>
+    </div>
+
+    <!-- Score + KPIs -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+      <div class="bg-white p-5 rounded-lg shadow text-center col-span-2 md:col-span-1">
+        <div class="text-6xl font-bold text-red-600">F</div>
+        <div class="text-sm text-gray-500 mt-1">Score: 0/100</div>
+      </div>
+      <div class="bg-red-600 text-white p-5 rounded-lg shadow text-center">
+        <div class="text-3xl font-bold">0</div>
+        <div class="text-xs uppercase">Critical</div>
+      </div>
+      <div class="bg-orange-500 text-white p-5 rounded-lg shadow text-center">
+        <div class="text-3xl font-bold">5</div>
+        <div class="text-xs uppercase">High</div>
+      </div>
+      <div class="bg-yellow-500 text-white p-5 rounded-lg shadow text-center">
+        <div class="text-3xl font-bold">7</div>
+        <div class="text-xs uppercase">Medium</div>
+      </div>
+      <div class="bg-blue-500 text-white p-5 rounded-lg shadow text-center">
+        <div class="text-3xl font-bold">36</div>
+        <div class="text-xs uppercase">Low/Info</div>
+      </div>
+    </div>
+
+    <div class="bg-emerald-100 text-emerald-900 border border-emerald-300 p-3 rounded mb-4 text-center text-sm">▸ Active anon-key probe ran on 0 suspected leak(s). 0 confirmed.</div>
+
+    <!-- Coverage -->
+    <div class="bg-white p-5 rounded-lg shadow mb-6">
+      <h2 class="text-lg font-bold mb-3">Coverage</h2>
+      <div class="grid grid-cols-3 gap-4 text-center">
+        <div><div class="text-2xl font-bold text-gray-700">142</div><div class="text-xs text-gray-500">Tables scanned</div></div>
+        <div><div class="text-2xl font-bold text-gray-700">15</div><div class="text-xs text-gray-500">SECURITY DEFINER functions</div></div>
+        <div><div class="text-2xl font-bold text-gray-700">1</div><div class="text-xs text-gray-500">Storage buckets</div></div>
+      </div>
+    </div>
+
+    <!-- Severity chart -->
+    
+    <div class="bg-white p-5 rounded-lg shadow mb-6">
+      <h2 class="text-lg font-bold mb-3">Findings by severity</h2>
+      <canvas id="severityChart" height="80"></canvas>
+    </div>
+    
+
+    <!-- Findings -->
+    
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold mb-4">Findings (48)</h2>
+      
+  <div class="bg-orange-100 text-orange-900 border-l-4 border-orange-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[HIGH] SECURITY DEFINER function executable by anon</h3>
+      <span class="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">high</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">refresh_achievement_stats</code></p>
+    
+    <p class="text-sm mb-3">Function runs with creator privileges. If buggy, escalates to admin.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;returns&quot;: &quot;void&quot;
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-0">REVOKE EXECUTE ON FUNCTION public.refresh_achievement_stats FROM anon;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-0').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-orange-100 text-orange-900 border-l-4 border-orange-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[HIGH] SECURITY DEFINER function executable by anon</h3>
+      <span class="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">high</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">fire_streak_milestone_feed</code></p>
+    
+    <p class="text-sm mb-3">Function runs with creator privileges. If buggy, escalates to admin.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;returns&quot;: &quot;void&quot;
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-1">REVOKE EXECUTE ON FUNCTION public.fire_streak_milestone_feed FROM anon;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-1').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-orange-100 text-orange-900 border-l-4 border-orange-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[HIGH] SECURITY DEFINER function executable by anon</h3>
+      <span class="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">high</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">community_search_similar</code></p>
+    
+    <p class="text-sm mb-3">Function runs with creator privileges. If buggy, escalates to admin.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;returns&quot;: &quot;TABLE(id uuid, title text, post_type text, is_answered boolean, comment_count integer, created_at timestamp with time zone, similarity real)&quot;
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-2">REVOKE EXECUTE ON FUNCTION public.community_search_similar FROM anon;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-2').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-orange-100 text-orange-900 border-l-4 border-orange-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[HIGH] SECURITY DEFINER function executable by anon</h3>
+      <span class="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">high</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">increment_answers_accepted</code></p>
+    
+    <p class="text-sm mb-3">Function runs with creator privileges. If buggy, escalates to admin.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;returns&quot;: &quot;void&quot;
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-3">REVOKE EXECUTE ON FUNCTION public.increment_answers_accepted FROM anon;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-3').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-orange-100 text-orange-900 border-l-4 border-orange-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[HIGH] Storage bucket is public</h3>
+      <span class="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">high</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">bucket:user-photos</code></p>
+    
+    <p class="text-sm mb-3">Anyone can list and download all files in the bucket.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;id&quot;: &quot;user-photos&quot;
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-4">UPDATE storage.buckets SET public = false WHERE id = &#39;user-photos&#39;; -- only if you don&#39;t need public CDN-style access</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-4').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-yellow-100 text-yellow-900 border-l-4 border-yellow-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[MEDIUM] SECURITY DEFINER function without SET search_path</h3>
+      <span class="bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">medium</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">fire_streak_milestone_feed</code></p>
+    
+    <p class="text-sm mb-3">Function with mutable search_path can be hijacked: an attacker with CREATE on any schema in the path can shadow built-in functions and run arbitrary code as the function owner.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;returns&quot;: &quot;void&quot;,
+  &quot;current_config&quot;: null
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-5">ALTER FUNCTION public.fire_streak_milestone_feed SET search_path = public, pg_temp;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-5').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-yellow-100 text-yellow-900 border-l-4 border-yellow-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[MEDIUM] SECURITY DEFINER function without SET search_path</h3>
+      <span class="bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">medium</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">community_search_similar</code></p>
+    
+    <p class="text-sm mb-3">Function with mutable search_path can be hijacked: an attacker with CREATE on any schema in the path can shadow built-in functions and run arbitrary code as the function owner.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;returns&quot;: &quot;TABLE(id uuid, title text, post_type text, is_answered boolean, comment_count integer, created_at timestamp with time zone, similarity real)&quot;,
+  &quot;current_config&quot;: null
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-6">ALTER FUNCTION public.community_search_similar SET search_path = public, pg_temp;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-6').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-yellow-100 text-yellow-900 border-l-4 border-yellow-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[MEDIUM] SECURITY DEFINER function without SET search_path</h3>
+      <span class="bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">medium</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">increment_answers_accepted</code></p>
+    
+    <p class="text-sm mb-3">Function with mutable search_path can be hijacked: an attacker with CREATE on any schema in the path can shadow built-in functions and run arbitrary code as the function owner.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;returns&quot;: &quot;void&quot;,
+  &quot;current_config&quot;: null
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-7">ALTER FUNCTION public.increment_answers_accepted SET search_path = public, pg_temp;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-7').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-yellow-100 text-yellow-900 border-l-4 border-yellow-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[MEDIUM] Default privileges not revoked from anon/authenticated</h3>
+      <span class="bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">medium</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">schema:public (leaky owners: supabase_admin)</code></p>
+    
+    <p class="text-sm mb-3">New tables you create will be auto-exposed. Supabase enforces this by Oct 30, 2026.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;leaky_owner_roles&quot;: [
+    &quot;supabase_admin&quot;
+  ],
+  &quot;note&quot;: &quot;Supabase enforces revoke for all projects by Oct 30, 2026.&quot;
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-8">
+-- Tables created via Supabase Dashboard (owner = supabase_admin) cannot be revoked from postgres role.
+-- Toggle this in: Dashboard -&gt; Project Settings -&gt; Data API -&gt; &quot;Automatically expose new tables&quot; = OFF
+-- Or via Management API: PATCH /v1/projects/wpqnaardeaqgvllichui/postgrest with {&quot;db_extra_search_path&quot;:&quot;public&quot;, ...} (see docs).</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-8').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-yellow-100 text-yellow-900 border-l-4 border-yellow-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[MEDIUM] Signups enabled without email confirmation</h3>
+      <span class="bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">medium</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">auth:signups</code></p>
+    
+    <p class="text-sm mb-3">Anyone can create accounts and bypass email-gated logic.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;signups_enabled&quot;: true,
+  &quot;autoconfirm&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-9">-- Dashboard: Auth -&gt; Providers -&gt; Email -&gt; &quot;Confirm email&quot; = ON
+-- API: PATCH /v1/projects/wpqnaardeaqgvllichui/config/auth body {&quot;mailer_autoconfirm&quot;: false}</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-9').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-yellow-100 text-yellow-900 border-l-4 border-yellow-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[MEDIUM] Weak password policy</h3>
+      <span class="bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">medium</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">auth:password</code></p>
+    
+    <p class="text-sm mb-3">Minimum length below 8 characters. Use at least 8 + complexity requirements (digits/symbols).</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;password_min_length&quot;: 6,
+  &quot;password_required_characters&quot;: null
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-10">-- Dashboard: Auth -&gt; Providers -&gt; Email -&gt; &quot;Minimum password length&quot; &gt;= 8
+-- API: PATCH /v1/projects/wpqnaardeaqgvllichui/config/auth body {&quot;password_min_length&quot;: 12, &quot;password_required_characters&quot;: &quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&amp;*()&quot;}</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-10').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-yellow-100 text-yellow-900 border-l-4 border-yellow-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[MEDIUM] No CAPTCHA on auth endpoints</h3>
+      <span class="bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">medium</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">auth:captcha</code></p>
+    
+    <p class="text-sm mb-3">Without CAPTCHA, signup/login forms can be brute-forced or spammed by bots.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;security_captcha_enabled&quot;: false
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-11">-- Dashboard: Auth -&gt; Settings -&gt; Enable CAPTCHA (hCaptcha or Cloudflare Turnstile)
+-- API: PATCH /v1/projects/wpqnaardeaqgvllichui/config/auth body {&quot;security_captcha_enabled&quot;: true, &quot;security_captcha_provider&quot;: &quot;hcaptcha&quot;, &quot;security_captcha_secret&quot;: &quot;&lt;your_secret&gt;&quot;}</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-11').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">aeo_h2_rewrites</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-12">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.aeo_h2_rewrites FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-12').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">ai_token_budget</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-13">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.ai_token_budget FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-13').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">auto_content_runs</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-14">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.auto_content_runs FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-14').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">b2b_leads</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-15">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.b2b_leads FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-15').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">b2b_outreach_log</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-16">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.b2b_outreach_log FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-16').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">bot_outbound_log</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-17">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.bot_outbound_log FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-17').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">community_bot_personas</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-18">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.community_bot_personas FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-18').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">community_bot_quarantine</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-19">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.community_bot_quarantine FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-19').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">community_bot_runs</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-20">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.community_bot_runs FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-20').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">community_bot_topic_history</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-21">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.community_bot_topic_history FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-21').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">digest_runs</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-22">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.digest_runs FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-22').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">engagement_emails</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-23">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.engagement_emails FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-23').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">growth_actions</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-24">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.growth_actions FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-24').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">growth_metrics</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-25">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.growth_metrics FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-25').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">growth_targets</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-26">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.growth_targets FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-26').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">growth_trending_topics</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-27">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.growth_trending_topics FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-27').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">gsc_queries</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-28">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.gsc_queries FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-28').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">messaging_webhook_events</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-29">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.messaging_webhook_events FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-29').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">owned_sub_content_calendar</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-30">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.owned_sub_content_calendar FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-30').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">owned_sub_invites</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-31">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.owned_sub_invites FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-31').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">owned_sub_member_snapshots</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-32">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.owned_sub_member_snapshots FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-32').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">owned_sub_posts</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-33">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.owned_sub_posts FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-33').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">owned_sub_welcomes</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-34">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.owned_sub_welcomes FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-34').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">owned_subreddit</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-35">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.owned_subreddit FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-35').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">programmatic_pages_queue</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-36">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.programmatic_pages_queue FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-36').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">query_position_history</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-37">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.query_position_history FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-37').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">reddit_actions</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-38">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.reddit_actions FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-38').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">reddit_opportunities</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-39">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.reddit_opportunities FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-39').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">reddit_subreddits</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-40">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.reddit_subreddits FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-40').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">scheduled_tweets</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-41">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.scheduled_tweets FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-41').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">seo_inspect_log</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-42">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.seo_inspect_log FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-42').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">seo_opportunity_queue</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-43">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.seo_opportunity_queue FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-43').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">seo_pages_status</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-44">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.seo_pages_status FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-44').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">translation_usage</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-45">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.translation_usage FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-45').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">tutor_question_categories</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-46">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.tutor_question_categories FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-46').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+  <div class="bg-blue-100 text-blue-900 border-l-4 border-blue-500 p-5 rounded shadow-sm mb-3">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-bold text-lg">[LOW] RLS-locked table still has direct anon grants (defense-in-depth)</h3>
+      <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded uppercase">low</span>
+    </div>
+    <p class="text-sm mb-2"><strong>Target:</strong> <code class="bg-white px-2 py-1 rounded text-xs">winback_queue</code></p>
+    
+    <p class="text-sm mb-3">Currently safe — RLS blocks all access. But if RLS is ever disabled by mistake, data leaks instantly. Best practice: revoke grants too.</p>
+    <details class="text-xs mb-2"><summary class="cursor-pointer font-semibold">Details</summary><pre class="bg-white p-2 rounded mt-1 overflow-x-auto">{
+  &quot;policies&quot;: 0,
+  &quot;anon_select&quot;: true,
+  &quot;auth_select&quot;: true
+}</pre></details>
+    <details class="text-xs">
+      <summary class="cursor-pointer font-semibold text-green-800">Fix SQL (copy & run in Supabase SQL editor)</summary>
+      <pre class="bg-gray-900 text-green-300 p-3 rounded mt-1 overflow-x-auto"><code id="fix-47">-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.winback_queue FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('fix-47').textContent)" class="mt-2 bg-green-700 hover:bg-green-800 text-white text-xs px-3 py-1 rounded">Copy SQL</button>
+    </details>
+  </div>
+    </div>
+
+    <!-- All fixes bundle -->
+    <div class="bg-white p-5 rounded-lg shadow mb-6">
+      <h2 class="text-lg font-bold mb-3">Apply all fixes (single SQL script)</h2>
+      <p class="text-sm text-gray-600 mb-3">Copy and run in Supabase Dashboard → SQL Editor. Review each statement before executing.</p>
+      <pre class="bg-gray-900 text-green-300 p-4 rounded overflow-x-auto text-xs"><code id="all-fixes">-- SECURITY DEFINER function executable by anon (refresh_achievement_stats)
+REVOKE EXECUTE ON FUNCTION public.refresh_achievement_stats FROM anon;
+
+-- SECURITY DEFINER function executable by anon (fire_streak_milestone_feed)
+REVOKE EXECUTE ON FUNCTION public.fire_streak_milestone_feed FROM anon;
+
+-- SECURITY DEFINER function executable by anon (community_search_similar)
+REVOKE EXECUTE ON FUNCTION public.community_search_similar FROM anon;
+
+-- SECURITY DEFINER function executable by anon (increment_answers_accepted)
+REVOKE EXECUTE ON FUNCTION public.increment_answers_accepted FROM anon;
+
+-- Storage bucket is public (bucket:user-photos)
+UPDATE storage.buckets SET public = false WHERE id = &#39;user-photos&#39;; -- only if you don&#39;t need public CDN-style access
+
+-- SECURITY DEFINER function without SET search_path (fire_streak_milestone_feed)
+ALTER FUNCTION public.fire_streak_milestone_feed SET search_path = public, pg_temp;
+
+-- SECURITY DEFINER function without SET search_path (community_search_similar)
+ALTER FUNCTION public.community_search_similar SET search_path = public, pg_temp;
+
+-- SECURITY DEFINER function without SET search_path (increment_answers_accepted)
+ALTER FUNCTION public.increment_answers_accepted SET search_path = public, pg_temp;
+
+-- Default privileges not revoked from anon/authenticated (schema:public (leaky owners: supabase_admin))
+
+-- Tables created via Supabase Dashboard (owner = supabase_admin) cannot be revoked from postgres role.
+-- Toggle this in: Dashboard -&gt; Project Settings -&gt; Data API -&gt; &quot;Automatically expose new tables&quot; = OFF
+-- Or via Management API: PATCH /v1/projects/wpqnaardeaqgvllichui/postgrest with {&quot;db_extra_search_path&quot;:&quot;public&quot;, ...} (see docs).
+
+-- Signups enabled without email confirmation (auth:signups)
+-- Dashboard: Auth -&gt; Providers -&gt; Email -&gt; &quot;Confirm email&quot; = ON
+-- API: PATCH /v1/projects/wpqnaardeaqgvllichui/config/auth body {&quot;mailer_autoconfirm&quot;: false}
+
+-- Weak password policy (auth:password)
+-- Dashboard: Auth -&gt; Providers -&gt; Email -&gt; &quot;Minimum password length&quot; &gt;= 8
+-- API: PATCH /v1/projects/wpqnaardeaqgvllichui/config/auth body {&quot;password_min_length&quot;: 12, &quot;password_required_characters&quot;: &quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&amp;*()&quot;}
+
+-- No CAPTCHA on auth endpoints (auth:captcha)
+-- Dashboard: Auth -&gt; Settings -&gt; Enable CAPTCHA (hCaptcha or Cloudflare Turnstile)
+-- API: PATCH /v1/projects/wpqnaardeaqgvllichui/config/auth body {&quot;security_captcha_enabled&quot;: true, &quot;security_captcha_provider&quot;: &quot;hcaptcha&quot;, &quot;security_captcha_secret&quot;: &quot;&lt;your_secret&gt;&quot;}
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (aeo_h2_rewrites)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.aeo_h2_rewrites FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (ai_token_budget)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.ai_token_budget FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (auto_content_runs)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.auto_content_runs FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (b2b_leads)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.b2b_leads FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (b2b_outreach_log)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.b2b_outreach_log FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (bot_outbound_log)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.bot_outbound_log FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (community_bot_personas)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.community_bot_personas FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (community_bot_quarantine)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.community_bot_quarantine FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (community_bot_runs)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.community_bot_runs FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (community_bot_topic_history)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.community_bot_topic_history FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (digest_runs)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.digest_runs FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (engagement_emails)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.engagement_emails FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (growth_actions)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.growth_actions FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (growth_metrics)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.growth_metrics FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (growth_targets)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.growth_targets FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (growth_trending_topics)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.growth_trending_topics FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (gsc_queries)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.gsc_queries FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (messaging_webhook_events)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.messaging_webhook_events FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (owned_sub_content_calendar)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.owned_sub_content_calendar FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (owned_sub_invites)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.owned_sub_invites FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (owned_sub_member_snapshots)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.owned_sub_member_snapshots FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (owned_sub_posts)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.owned_sub_posts FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (owned_sub_welcomes)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.owned_sub_welcomes FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (owned_subreddit)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.owned_subreddit FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (programmatic_pages_queue)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.programmatic_pages_queue FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (query_position_history)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.query_position_history FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (reddit_actions)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.reddit_actions FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (reddit_opportunities)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.reddit_opportunities FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (reddit_subreddits)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.reddit_subreddits FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (scheduled_tweets)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.scheduled_tweets FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (seo_inspect_log)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.seo_inspect_log FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (seo_opportunity_queue)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.seo_opportunity_queue FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (seo_pages_status)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.seo_pages_status FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (translation_usage)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.translation_usage FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (tutor_question_categories)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.tutor_question_categories FROM anon, authenticated;
+
+-- RLS-locked table still has direct anon grants (defense-in-depth) (winback_queue)
+-- Optional hardening: revoke direct grants to make leak impossible even if RLS is disabled.
+REVOKE ALL ON public.winback_queue FROM anon, authenticated;</code></pre>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('all-fixes').textContent)" class="mt-3 bg-emerald-700 hover:bg-emerald-800 text-white text-sm px-4 py-2 rounded">Copy all SQL</button>
+    </div>
+    
+
+    <!-- Footer -->
+    <div class="text-center text-xs text-gray-500 mt-8 pb-4">
+      Generated by <a href="https://github.com/Perufitlife/supabase-security-skill" class="text-emerald-700 underline">supabase-security</a>
+      &middot; Open source (MIT) &middot; Run locally, your token never leaves your machine.
+    </div>
+  </div>
+
+  
+  <script>
+    new Chart(document.getElementById("severityChart"), {
+      type: "bar",
+      data: {
+        labels: ["Critical", "High", "Medium", "Low", "Info"],
+        datasets: [{
+          data: [0, 5, 7, 36, 0],
+          backgroundColor: ["#dc2626", "#f97316", "#eab308", "#3b82f6", "#6b7280"]
+        }]
+      },
+      options: {
+        indexAxis: "y",
+        plugins: { legend: { display: false } },
+        scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+      }
+    });
+  </script>
+</body>
+</html>
