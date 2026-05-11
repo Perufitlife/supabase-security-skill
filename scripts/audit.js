@@ -485,4 +485,4 @@ if (import.meta.url === `file://${process.argv[1].replace(/\\/g, "/")}` || impor
   });
 }
 
-export { audit, sql, getAnonKey, probeAnonAccess };
+export { audit, sql, getAnonKey, probeAnonAccess, main };
