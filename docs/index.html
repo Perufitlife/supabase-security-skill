@@ -24,6 +24,57 @@
     </div>
   </div>
 
+  <div id="live-demo" class="rounded-2xl border border-slate-700 bg-black overflow-hidden mb-8 font-mono text-sm">
+    <div class="flex items-center gap-2 px-3 py-2 border-b border-slate-700 bg-slate-900/80">
+      <span class="size-3 rounded-full bg-rose-500"></span>
+      <span class="size-3 rounded-full bg-amber-400"></span>
+      <span class="size-3 rounded-full bg-emerald-500"></span>
+      <span class="text-xs text-slate-500 ml-2">supabase-security · live demo</span>
+    </div>
+    <div id="demo-body" class="p-4 min-h-[340px]"></div>
+  </div>
+  <script>
+  (function() {
+    var SCRIPT = [
+      { t: "$ npx supabase-security --discover", c: "text-slate-500" },
+      { t: "Discovering tables in public schema...", c: "text-slate-300" },
+      { t: "Found 12 tables. Sending anonymous probes...", c: "text-slate-300" },
+      { t: "", c: "" },
+      { t: "CRITICAL  public.users          (1,209 rows visible to anon)", c: "text-rose-400" },
+      { t: "CRITICAL  public.subscriptions  (340 rows visible to anon)", c: "text-rose-400" },
+      { t: "CRITICAL  public.payment_logs   (5,118 rows visible to anon)", c: "text-rose-400" },
+      { t: "HIGH      public.audit_log      (12k rows visible to anon)", c: "text-amber-400" },
+      { t: "MEDIUM    storage.uploads        (public bucket, 4.2GB)", c: "text-yellow-300" },
+      { t: "", c: "" },
+      { t: "Wrote report.html — 14 critical, 27 high, 11 medium", c: "text-slate-300" },
+      { t: "Grade: F", c: "text-rose-300" },
+    ];
+    var body = document.getElementById("demo-body");
+    if (!body) return;
+    function render(i) {
+      body.innerHTML = "";
+      for (var k = 0; k < i; k++) {
+        var d = document.createElement("div");
+        d.className = SCRIPT[k].c || "text-slate-300";
+        d.textContent = SCRIPT[k].t || " ";
+        body.appendChild(d);
+      }
+      if (i < SCRIPT.length) {
+        var caret = document.createElement("span");
+        caret.className = "inline-block w-2 h-4 bg-slate-300 align-middle ml-1 animate-pulse";
+        body.appendChild(caret);
+      }
+    }
+    var i = 0;
+    function tick() {
+      i = i < SCRIPT.length ? i + 1 : 0;
+      render(i);
+      setTimeout(tick, i === 0 ? 800 : i === SCRIPT.length ? 4500 : 320);
+    }
+    setTimeout(tick, 200);
+  })();
+  </script>
+
   <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-8 mb-8">
     <h2 class="text-2xl font-bold mb-6 text-emerald-400">What you get</h2>
     <ul class="space-y-4 text-slate-200">
