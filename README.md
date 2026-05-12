@@ -32,6 +32,11 @@ Findings: 0 critical, 5 high, 2 medium
 > **Sister tools** for other BaaS platforms (same `--discover` flag, all MIT):
 > [pocketbase-security](https://www.npmjs.com/package/pocketbase-security) · [appwrite-security](https://www.npmjs.com/package/appwrite-security) · [firebase-security](https://www.npmjs.com/package/firebase-security) · [nhost-security](https://www.npmjs.com/package/nhost-security)
 
+> **Want it done for you?** Three productized services:
+> - [**RLS Audit Friday** — $99 / 24h](https://buy.stripe.com/3cIeVdgikfj47yx9LkcAo0m) — I run the audit on your project + send a PDF report by Friday EOD
+> - [**Vibe-code Security Review** — $199 / 48h](https://buy.stripe.com/bJe00jgik4EqdWV2iScAo0n) — full security review of AI-generated code (Cursor / Claude / v0 / Bolt)
+> - [**Sandbox-as-a-Service** — $499 / 48h](https://buy.stripe.com/aFa7sLc243Amf0Z5v4cAo0l) — custom partner integration sandbox for your API
+
 ## Why
 
 On **May 30, 2026** Supabase changes its default for new projects: tables in `public` no longer auto-expose to the Data API. On **October 30, 2026** that becomes the enforced default for **all existing projects**.
