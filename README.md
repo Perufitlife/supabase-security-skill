@@ -6,7 +6,7 @@
 
 > ⚡ **Want me to run it for you?** Tiers from **$5 single-fix bundle → $99 full report → $249 multi-tenant audit** — [perufitlife.github.io/supabase-security-skill](https://perufitlife.github.io/supabase-security-skill/) (one landing covers all five — Supabase, PocketBase, Appwrite, Hasura, Firebase)
 
-> 🪞 **Sister tool**: [aitells](https://aitells.vercel.app/) flags AI fingerprints in your text (em-dashes, "delve", parallel bullets, 9 more patterns). Built after my own Reddit account got 2 "all AI generated" callouts in one day. Free detector.
+> 🪞 **Sister tool**: [aitells](https://aitells.vercel.app/) detects + rewrites AI fingerprints in your text. Free detector at the URL, free first rewrite at [/rewrite](https://aitells.vercel.app/rewrite) (paste your own writing samples, get the AI text matched to your voice). Built after my own Reddit account got 2 "all AI generated" callouts in one day.
 
 > 🤖 **Use it in GitHub Actions** — drop this into `.github/workflows/security.yml`:
 > ```yaml
