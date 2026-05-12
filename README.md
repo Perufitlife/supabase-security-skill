@@ -129,6 +129,15 @@ This is fewer features than the SaaS players. The trade-off is full control of t
 - [ ] Apify actor wrapper (one-click HTML report, no install)
 - [ ] MCP server with `audit` and `apply-fix` tools (preview + rollback)
 
+
+## Sister AI text tools
+
+If your team writes outreach, PR descriptions, or social posts with AI, the [aitells](https://aitells.vercel.app) ecosystem catches the fingerprints before they ship:
+
+- [`@perufitlife/aitells-mcp`](https://www.npmjs.com/package/@perufitlife/aitells-mcp) — MCP server for Claude Code / Cursor. `detect_ai_tells` + `humanize_text` as native tools.
+- [`Perufitlife/aitells-action`](https://github.com/Perufitlife/aitells-action) — GitHub Action that scans PR titles/bodies/commits for AI patterns. Posts friendly summary comment.
+- [aitells.vercel.app](https://aitells.vercel.app) — free detector + $19 lifetime humanizer (first 100 buyers)
+
 ## License
 
 MIT.
