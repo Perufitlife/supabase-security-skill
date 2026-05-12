@@ -39,9 +39,19 @@
     <h2 class="text-2xl font-bold mb-3">Results</h2>
     <div id="summary" class="mb-4"></div>
     <div id="findings" class="space-y-3"></div>
-    <div class="mt-6 bg-emerald-900/40 border border-emerald-500/40 rounded-xl p-5">
-      <p class="text-sm">Found leaks and want a thorough audit (every table, RLS policies, storage buckets, SECURITY DEFINER functions, signed URL leaks) + written report?</p>
-      <a href="https://buy.stripe.com/8x2cN56HK2wi3ihf5EcAo08" class="mt-3 inline-block bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold px-5 py-2 rounded-lg">$99 → full audit (24h)</a>
+    <div id="lead-capture" class="mt-6 bg-emerald-900/40 border border-emerald-500/40 rounded-xl p-5">
+      <p class="text-sm font-semibold mb-1">Want to know if these leaks come back next week?</p>
+      <p class="text-xs text-slate-300 mb-3">Drop your email — I'll run a fresh scan in 7 days and only email you if NEW high/critical findings appear. No spam, no upsell email blasts.</p>
+      <form id="lead-form" class="flex flex-col sm:flex-row gap-2">
+        <input id="lead-email" type="email" required placeholder="you@company.com" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm">
+        <button type="submit" class="bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold px-5 py-2 rounded-lg whitespace-nowrap">Watch this project — free</button>
+      </form>
+      <p id="lead-status" class="text-xs mt-2 hidden"></p>
+    </div>
+
+    <div class="mt-4 bg-slate-800/50 border border-slate-700 rounded-xl p-5">
+      <p class="text-sm">Or get a full written audit + fix SQL right now (every table, RLS policies, storage buckets, SECURITY DEFINER functions, signed URL leaks):</p>
+      <a href="https://buy.stripe.com/8x2cN56HK2wi3ihf5EcAo08" class="mt-3 inline-block bg-white hover:bg-slate-100 text-slate-900 font-bold px-5 py-2 rounded-lg">$99 → full audit (24h)</a>
       <a href="/supabase-security-skill/" class="ml-3 text-emerald-300 underline text-sm">More info</a>
     </div>
   </div>
@@ -64,6 +74,35 @@ const COMMON_TABLES = [
   "files", "uploads", "documents", "attachments", "media",
   "settings", "config", "preferences", "feature_flags", "audit_logs"
 ];
+
+// Lead capture form — posts to RLS Monitor (CORS enabled) with scanned project URL.
+document.getElementById("lead-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("lead-email").value.trim();
+  const project = document.getElementById("url").value.trim();
+  const status = document.getElementById("lead-status");
+  status.className = "text-xs mt-2 text-slate-300";
+  status.classList.remove("hidden");
+  status.textContent = "Sending...";
+  try {
+    const r = await fetch("https://rls-monitor.vercel.app/api/onboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, project, stack: "supabase", cs_id: "scan-tripwire" }),
+    });
+    const data = await r.json();
+    if (data.ok) {
+      status.className = "text-xs mt-2 text-emerald-300 font-semibold";
+      status.textContent = "Saved. First re-scan in 7 days. Check your inbox — I sent you a token + GitHub Action snippet to enable real-time monitoring.";
+    } else {
+      status.className = "text-xs mt-2 text-rose-300";
+      status.textContent = "Couldn't save: " + (data.error || "unknown");
+    }
+  } catch (err) {
+    status.className = "text-xs mt-2 text-rose-300";
+    status.textContent = "Network error: " + err.message;
+  }
+});
 
 document.getElementById("scan").addEventListener("click", async () => {
   const url = document.getElementById("url").value.trim().replace(/\/$/, "");
