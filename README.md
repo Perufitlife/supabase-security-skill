@@ -150,3 +150,7 @@ If your team writes outreach, PR descriptions, or social posts with AI, the [ait
 ## License
 
 MIT.
+
+---
+
+📚 Part of [**Awesome Backend Security Auditors**](https://github.com/Perufitlife/awesome-backend-security) — the full collection of keyless active-probe auditors.
