@@ -30,7 +30,7 @@ Findings: 0 critical, 5 high, 2 medium
 [![npm](https://img.shields.io/npm/v/supabase-security?color=red)](https://www.npmjs.com/package/supabase-security) [![downloads](https://img.shields.io/npm/dw/supabase-security)](https://www.npmjs.com/package/supabase-security) [![GitHub stars](https://img.shields.io/github/stars/Perufitlife/supabase-security-skill?style=social)](https://github.com/Perufitlife/supabase-security-skill) [![Glama](https://img.shields.io/badge/Glama-approved-blueviolet)](https://glama.ai/mcp/servers/) ![license](https://img.shields.io/badge/license-MIT-green) ![node](https://img.shields.io/badge/node-%3E%3D18-blue)
 
 > **Sister tools** for other BaaS platforms (same `--discover` flag, all MIT):
-> [pocketbase-security](https://www.npmjs.com/package/pocketbase-security) · [appwrite-security](https://www.npmjs.com/package/appwrite-security) · [firebase-security](https://www.npmjs.com/package/firebase-security) · [nhost-security](https://www.npmjs.com/package/nhost-security) · [strapi-security](https://www.npmjs.com/package/strapi-security)
+> [pocketbase-security](https://www.npmjs.com/package/pocketbase-security) · [appwrite-security](https://www.npmjs.com/package/appwrite-security) · [firebase-security](https://www.npmjs.com/package/firebase-security) · [nhost-security](https://www.npmjs.com/package/nhost-security) · [strapi-security](https://www.npmjs.com/package/strapi-security) · [directus-security](https://www.npmjs.com/package/directus-security)
 
 > **Want it done for you?** Three productized services:
 > - [**RLS Audit Friday** — $99 / 24h](https://buy.stripe.com/3cIeVdgikfj47yx9LkcAo0m) — I run the audit on your project + send a PDF report by Friday EOD
