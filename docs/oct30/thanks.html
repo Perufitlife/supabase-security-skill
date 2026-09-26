@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Order confirmed | supabase-security Oct 30</title>
+<meta name="description" content="Your Oct 30 order is confirmed. Send the repo, access and project ref to start the clock.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230b6e5c' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Fragment+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#eef1f4; --paper-2:#e3e8ed; --card:#ffffff;
+  --ink:#0f1b26; --ink-2:#3f4d59; --ink-3:#66737f; --rule:#d0d8df;
+  --grant:#0b6e5c; --grant-bg:#e2f1ec; --btn:#0f1b26; --btn-ink:#fff;
+  --f:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --m:"Fragment Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--paper:#0c1319;--paper-2:#111b23;--card:#121d26;--ink:#e7edf2;--ink-2:#aab6c0;--ink-3:#7f8c98;--rule:#233340;--grant:#45c9a4;--grant-bg:#10271f;--btn:#e7edf2;--btn-ink:#0c1319}
+}
+:root[data-theme="dark"]{--paper:#0c1319;--paper-2:#111b23;--card:#121d26;--ink:#e7edf2;--ink-2:#aab6c0;--ink-3:#7f8c98;--rule:#233340;--grant:#45c9a4;--grant-bg:#10271f;--btn:#e7edf2;--btn-ink:#0c1319}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.55;overflow-x:clip}
+a{color:inherit}
+code{font-family:var(--m);font-size:.86em;background:var(--paper-2);padding:.08em .35em;border-radius:5px}
+:focus-visible{outline:3px solid var(--grant);outline-offset:3px;border-radius:4px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+@media (min-width:720px){.wrap{padding:0 32px}}
+.ico{width:1.15em;height:1.15em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.top{border-bottom:1px solid var(--rule)}
+.top .wrap{display:flex;align-items:center;height:58px}
+.mark{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;font-size:15.5px}
+.mark .ico{color:var(--grant);width:20px;height:20px}
+.mark span{color:var(--ink-3);font-weight:500}
+.ok{display:inline-flex;align-items:center;gap:8px;margin:44px 0 0;padding:5px 12px 5px 10px;border-radius:999px;background:var(--grant-bg);color:var(--grant);font-weight:650;font-size:14.5px}
+.ok .ico{width:17px;height:17px}
+h1{margin:16px 0 0;font-size:clamp(2.1rem,8vw,3.4rem);line-height:1;letter-spacing:-.025em;font-weight:800;font-variation-settings:"wdth" 112;max-width:19ch}
+.lede{margin:18px 0 0;color:var(--ink-2);font-size:1.1rem;max-width:38em}
+.steps{list-style:none;margin:40px 0 0;padding:0;counter-reset:s;border-top:1px solid var(--rule)}
+.steps>li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;gap:4px 14px;padding:24px 0;border-bottom:1px solid var(--rule)}
+.steps>li::before{content:counter(s);width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--rule);font-weight:700;font-size:15px;color:var(--ink-2)}
+.steps>li:first-child::before{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.steps h2{margin:4px 0 0;font-size:1.2rem;font-weight:700;letter-spacing:-.01em}
+.steps p{margin:6px 0 0;color:var(--ink-2)}
+.steps .body{grid-column:2}
+.need{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:12px}
+.need li{display:flex;gap:12px;background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:14px 16px}
+.need .ico{color:var(--grant);margin-top:3px;width:19px;height:19px}
+.need b{display:block}
+.need span{color:var(--ink-2);font-size:15.5px}
+.btn{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:.5em;min-height:54px;padding:0 24px;border-radius:10px;background:var(--btn);color:var(--btn-ink);font-weight:650;font-size:17px;text-decoration:none;margin-top:18px}
+.btn .ico{width:19px;height:19px}
+@media (max-width:559px){.btn{width:100%}}
+.small{font-size:14.5px;color:var(--ink-3);margin:10px 0 0}
+.guar{margin:36px 0 0;padding:18px 20px;border-left:3px solid var(--grant);background:var(--card);border-radius:0 12px 12px 0}
+.guar p{margin:0;color:var(--ink-2)}
+.guar b{color:var(--ink)}
+.pick{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.pick a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid var(--rule);border-radius:9px;text-decoration:none;font-weight:600;background:var(--card)}
+footer{margin-top:56px;border-top:1px solid var(--rule);padding:24px 0 40px;font-size:14px;color:var(--ink-3)}
+footer p{margin:0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></symbol>
+  <symbol id="i-branch" viewBox="0 0 24 24"><path d="M15 6a9 9 0 0 0-9 9V3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></symbol>
+  <symbol id="i-sign" viewBox="0 0 24 24"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></symbol>
+</svg>
+
+<header class="top"><div class="wrap"><a class="mark" href="./"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg>supabase-security<span>&nbsp;/ Oct 30</span></a></div></header>
+
+<main class="wrap">
+  <p class="ok"><svg class="ico" aria-hidden="true"><use href="#i-ok"/></svg><span id="paid">Payment received</span></p>
+  <h1 id="title">Thanks. Let&rsquo;s get your project ready for Oct&nbsp;30.</h1>
+  <p class="lede" id="lede">Stripe has emailed your receipt (it shows Rotate Pilot, our parent company). One email from you starts the work.</p>
+
+  <div id="unknown" hidden>
+    <p class="lede">Which plan did you buy? Pick it so the email below has the right checklist.</p>
+    <div class="pick">
+      <a href="?tier=fix">Oct 30 Fix Pack</a>
+      <a href="?tier=hardening">Hardening + Proof Report</a>
+      <a href="?tier=fleet">Agency Fleet</a>
+    </div>
+  </div>
+
+  <ol class="steps">
+    <li>
+      <div class="body">
+        <h2>Send us what we need to start</h2>
+        <ul class="need">
+          <li><svg class="ico" aria-hidden="true"><use href="#i-branch"/></svg><div><b id="need-repo">The repo</b><span id="need-repo-d">The GitHub repo with your <code>supabase/migrations</code> folder, or the app repo if you don&rsquo;t use migrations yet.</span></div></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-key"/></svg><div><b>Access, one of two ways</b><span>Invite GitHub user <code>Perufitlife</code> as a collaborator (Write lets us open the pull request; we never push to your main branch or merge). Or create a fine-grained, read-only token for that repo, set to expire in 30 days, and send it in a separate email.</span></div></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-db"/></svg><div><b>Your Supabase project ref</b><span>The part before <code>.supabase.co</code> in your project URL. We don&rsquo;t need your service_role key or database password.</span></div></li>
+          <li id="need-auth" hidden><svg class="ico" aria-hidden="true"><use href="#i-sign"/></svg><div><b>Your written OK for the live test</b><span>One line in the email authorizing a read-only test with your public anon key against that project. We test nothing until we have it.</span></div></li>
+          <li id="need-agency" hidden><svg class="ico" aria-hidden="true"><use href="#i-building"/></svg><div><b>Your agency details</b><span>The name (and logo, if you want it) for the white-label reports, and the list of up to 10 client repos with their project refs.</span></div></li>
+        </ul>
+        <a class="btn" id="mail" href="mailto:renzomacar@gmail.com?subject=Oct%2030%20order%3A%20start"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg>Email the start details</a>
+        <p class="small">Opens your email app with a checklist filled in. Or write to <a href="mailto:renzomacar@gmail.com">renzomacar@gmail.com</a> and use the email address you paid with.</p>
+      </div>
+    </li>
+    <li>
+      <div class="body">
+        <h2>We confirm access and start the clock</h2>
+        <p>We reply within one business day to confirm we can see the repo and the project. Your delivery time counts from the moment access works.</p>
+      </div>
+    </li>
+    <li>
+      <div class="body">
+        <h2 id="deliver-h">Your pull request arrives within 48 hours</h2>
+        <p id="deliver-p">Least-privilege grants for every table, view, sequence and RPC function your app reaches, row level security checked on each one, verified by replaying your migrations on a clean database and calling the API as anon and as a signed-in user, plus the CI check. You review, merge and deploy it the usual way.</p>
+      </div>
+    </li>
+    <li>
+      <div class="body">
+        <h2>After you merge</h2>
+        <p>The CI check fails any future migration that adds a table without grants, so the fix holds after Oct 30. Questions on the pull request? Reply on it or by email.</p>
+      </div>
+    </li>
+  </ol>
+
+  <div class="guar">
+    <p><b>Your guarantee.</b> If a table covered by our pull request can&rsquo;t be reached through the Data API after Oct 30, we fix it free. If the deliverable is late against the time on your plan, counted from when access works, you get a full refund.</p>
+  </div>
+
+  <footer><p>supabase-security is an independent open-source project, not affiliated with or endorsed by Supabase, Inc. <a href="./">Back to the Oct 30 page</a>.</p></footer>
+</main>
+
+<script>
+(function(){
+  var d=document;
+  var TIERS={
+    fix:{name:'Oct 30 Fix Pack',time:'48 hours',h:'Your pull request arrives within 48 hours',
+      p:'Least-privilege grants for every table, view, sequence and RPC function your app reaches, row level security checked on each one, verified by replaying your migrations on a clean database and calling the API as anon and as a signed-in user, plus the CI check. You review, merge and deploy it the usual way.'},
+    hardening:{name:'Hardening + Proof Report',time:'5 business days',h:'Pull requests and your report within 5 business days',
+      p:'Everything in the Fix Pack, plus the audit of RLS policies, storage buckets and database functions, the live anon-key test (only after your OK), each fix as its own pull request, and the report for your customers’ security questionnaires.'},
+    fleet:{name:'Agency Fleet',time:'10 business days',h:'All client projects done within 10 business days',
+      p:'The Fix Pack on each client project (up to 10), a white-label report per client under your agency’s name, and the CI check installed in every repo. We send each pull request as it’s ready, not all at the end. After Oct 30 we re-test every project, then monitor each one weekly for 90 days.'}
+  };
+  var alias={fixpack:'fix','fix-pack':'fix',oct30:'fix',harden:'hardening',proof:'hardening',agency:'fleet'};
+  var q=(new URLSearchParams(location.search).get('tier')||'').toLowerCase().trim();
+  q=alias[q]||q;
+  var t=TIERS[q];
+  if(!t){ d.getElementById('unknown').hidden=false; return setMail(null); }
+  d.getElementById('paid').textContent='Payment received: '+t.name;
+  d.getElementById('deliver-h').textContent=t.h;
+  d.getElementById('deliver-p').textContent=t.p;
+  if(q==='hardening') d.getElementById('need-auth').hidden=false;
+  if(q==='fleet'){ d.getElementById('need-agency').hidden=false; d.getElementById('need-repo').textContent='The repos'; d.getElementById('need-repo-d').textContent='One line per client project: the GitHub repo and, next to it, its Supabase project ref.'; }
+  setMail(q);
+
+  function setMail(k){
+    var tier=k?TIERS[k]:null;
+    var L=[];
+    L.push('Plan: '+(tier?tier.name:'(Fix Pack / Hardening / Agency Fleet)'));
+    L.push('Email used at checkout: ');
+    L.push('');
+    if(k==='fleet'){
+      L.push('Agency name for the reports: ');
+      L.push('Logo (attach, optional): ');
+      L.push('');
+      L.push('Client projects (repo + Supabase project ref), up to 10:');
+      for(var i=1;i<=10;i++) L.push(i+'. ');
+    } else {
+      L.push('Repo: https://github.com/');
+      L.push('Supabase project ref: ');
+    }
+    L.push('');
+    L.push('Access (pick one):');
+    L.push('[ ] I invited Perufitlife as a collaborator');
+    L.push('[ ] I will send a read-only fine-grained token in a separate email');
+    L.push('');
+    L.push('Does the app use supabase-js, REST or GraphQL? ');
+    L.push('Anything we should not touch: ');
+    if(k==='hardening'){
+      L.push('');
+      L.push('Live test: I authorize a read-only test with our public anon key against project ref ________ (yes / no): ');
+      L.push('Who receives the report (name, email): ');
+    }
+    L.push('');
+    L.push('Best contact for questions on the pull request: ');
+    var subj='Oct 30 order: '+(tier?tier.name:'start');
+    d.getElementById('mail').href='mailto:renzomacar@gmail.com?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(L.join('\n'));
+  }
+})();
+</script>
+</body>
+</html>
