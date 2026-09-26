@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
 
   const email = String(s.customer_details?.email ?? s.customer_email ?? "").toLowerCase() || null;
   const nombre = s.customer_details?.name ?? null;
-  const isTest = ev.livemode === false || /\+oct30test@/i.test(email ?? "") || s.metadata?.oct30_test === "1";
+  const isTest = ev.livemode === false || /\+oct30test\d*@/i.test(email ?? "") || s.metadata?.oct30_test === "1";
   const { data: prev } = await db().from("oct30_orders").select("*").eq("stripe_session_id", s.id).maybeSingle();
 
   // ---------------------------------------------------------------- paid

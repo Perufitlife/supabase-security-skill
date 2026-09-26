@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
 
   // ---- lead (one row per email)
   const utm = typeof b.utm === "object" && b.utm ? Object.fromEntries(Object.entries(b.utm).slice(0, 8).map(([k, v]) => [clip(k, 30), clip(v, 120)])) : {};
-  const isTest = /\+oct30test@/i.test(email);
+  const isTest = /\+oct30test\d*@/i.test(email);
   const { data: existing } = await db().from("oct30_leads").select("*").eq("email", email).maybeSingle();
   const base = {
     email, rol, repo_url: noRepo ? null : repoIn, stack: clip(b.stack, 120) || null, descripcion: clip(b.description, 1000) || null,
