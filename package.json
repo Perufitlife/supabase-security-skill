@@ -34,5 +34,13 @@
   },
   "engines": {
     "node": ">=18"
-  }
+  },
+  "files": [
+    "scripts/*.js",
+    "references/",
+    "SKILL.md",
+    "README.md",
+    "LICENSE",
+    "action.yml"
+  ]
 }
