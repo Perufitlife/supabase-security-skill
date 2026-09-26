@@ -1,9 +1,9 @@
 ---
 name: supabase-security
-description: "Use when auditing or hardening a Supabase project's security posture. Triggers: scan/audit Supabase, RLS verification, find leaky tables, check anon grants, review SECURITY DEFINER functions, prep for the May 30 / Oct 30, 2026 Data API exposure changes, generate remediation SQL. Works against any Supabase project (Cloud or self-hosted) given a Personal Access Token."
+description: "Use when auditing or hardening a Supabase project's security posture. Triggers: scan/audit Supabase, RLS verification, find leaky tables, check anon grants, review SECURITY DEFINER functions, prep for the May 30 / Oct 30, 2026 Data API exposure changes, lint supabase/migrations for missing GRANTs (42501 permission denied), generate remediation SQL. Migration lint needs no credentials; live audits work against any Supabase project (Cloud or self-hosted) given a Personal Access Token."
 metadata:
   author: Perufitlife
-  version: "0.1.0"
+  version: "0.5.0"
   homepage: https://github.com/Perufitlife/supabase-security-skill
 ---
 
@@ -23,6 +23,14 @@ A pure-Node.js audit + remediation toolkit for Supabase projects. No dependencie
 Each finding includes the exact SQL needed to fix it. The skill never applies fixes automatically — it generates, you review, you run.
 
 ## How to use
+
+### Lint migrations for the Oct 30, 2026 Data API change (no token, offline)
+
+```bash
+node scripts/cli.js migrations [supabase/migrations] [--fix-sql grants.sql] [--json] [--schemas public,api] [--fail-on high]
+```
+
+Replays the SQL migrations in order. It flags objects with no GRANT to anon/authenticated/service_role: new ones like them get 42501 after Oct 30, and they already do on fresh projects and branches. It also flags grants to anon/authenticated on tables with RLS off (critical), blanket `GRANT ... ON ALL TABLES` / `ALTER DEFAULT PRIVILEGES ... TO anon` (the lazy fix), and SECURITY DEFINER functions that anon can call, including via PUBLIC. `--fix-sql` writes a least-privilege migration whose grants mirror the RLS policies. Review it before applying. Existing tables keep their grants: never tell the user their app "breaks on Oct 30".
 
 ### Quick audit (JSON to stdout)
 

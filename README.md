@@ -1,25 +1,91 @@
 # supabase-security
 
-> Audit and harden any Supabase project. Local-only, no SaaS, your token never leaves your machine. **v0.3 ships with active anon-key probe — confirms each leak live, not just inferred.**
+> Harden any Supabase project. Local-only, no SaaS, MIT. Lint your migrations with **no credentials**, or audit a live project with an active anon-key probe that confirms each leak.
 
-> ▶ **Run it without installing anything →** [apify.com/renzomacar/supabase-security-auditor](https://apify.com/renzomacar/supabase-security-auditor) (paste project ref + PAT, get HTML report)
+[![npm](https://img.shields.io/npm/v/supabase-security?color=red)](https://www.npmjs.com/package/supabase-security) [![downloads](https://img.shields.io/npm/dw/supabase-security)](https://www.npmjs.com/package/supabase-security) [![GitHub stars](https://img.shields.io/github/stars/Perufitlife/supabase-security-skill?style=social)](https://github.com/Perufitlife/supabase-security-skill) [![Glama](https://img.shields.io/badge/Glama-approved-blueviolet)](https://glama.ai/mcp/servers/) ![license](https://img.shields.io/badge/license-MIT-green) ![node](https://img.shields.io/badge/node-%3E%3D18-blue)
 
-> ⚡ **Want me to run it for you?** Tiers from **$5 single-fix bundle → $99 full report → $249 multi-tenant audit** — [perufitlife.github.io/supabase-security-skill](https://perufitlife.github.io/supabase-security-skill/) (one landing covers all five — Supabase, PocketBase, Appwrite, Hasura, Firebase)
+## Oct 30, 2026: will your next migration break?
 
-> 🪞 **Sister tool**: [aitells](https://aitells.vercel.app/) detects + rewrites AI fingerprints in your text. Free detector at the URL, free first rewrite at [/rewrite](https://aitells.vercel.app/rewrite) (paste your own writing samples, get the AI text matched to your voice). Built after my own Reddit account got 2 "all AI generated" callouts in one day.
+On **October 30, 2026** Supabase stops auto-granting new tables, views and sequences in `public` to `anon`, `authenticated` and `service_role` on **every existing project** ([changelog](https://supabase.com/changelog/45329-breaking-change-tables-not-exposed-to-data-and-graphql-api-automatically)). New projects already work this way. Your existing tables keep their grants. What changes:
 
-> 🤖 **Use it in GitHub Actions** — drop this into `.github/workflows/security.yml`:
-> ```yaml
-> - uses: Perufitlife/supabase-security-skill@v1.0.0-action
->   with:
->     project-ref: ${{ vars.SUPABASE_PROJECT_REF }}
->     token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
->     fail-on: critical
-> ```
->
-> 🔁 **Want this running on a cron?** [RLS Monitor](https://rls-monitor.vercel.app/) does weekly diff-based scans + email alerts when new findings appear — $29/mo, your keys never leave your CI.
->
-> 📦 **Need all 5 BaaS stacks at once?** The [BaaS Security Pack](https://perufitlife.github.io/supabase-security-skill/pack.html) bundles every scanner + sample reports + fix-SQL libraries — one $99 download.
+- every **new** table after Oct 30 answers `42501 permission denied` until you `GRANT` it;
+- replaying your migrations on a **new project, preview branch or `db reset`** already gives you tables nobody can reach.
+
+One command, no token, nothing leaves your machine:
+
+```bash
+npx supabase-security migrations            # reads supabase/migrations
+```
+
+It replays your SQL migrations in order and reports, per object:
+
+| Severity | What it catches |
+|---|---|
+| **CRITICAL** | Table granted to `anon`/`authenticated` with **RLS off**: the grant you add to silence 42501 publishes every row |
+| HIGH | Table/view with **no GRANT** at all: new ones like it are unreachable after Oct 30, and already are on any fresh project/branch |
+| HIGH | **The lazy fix**: `grant ... on all tables in schema public to anon` / `alter default privileges ... to anon` (Supabase's own rollback snippet) |
+| HIGH | `SECURITY DEFINER` function callable by `anon`, including via `PUBLIC` (a plain `revoke ... from anon` doesn't stop it, and Oct 30 doesn't touch functions) |
+| HIGH | View granted to clients without `security_invoker` (bypasses RLS); `serial` sequence missing `USAGE` (inserts fail) |
+| MEDIUM | Materialized view with no grant, `SECURITY DEFINER` without `search_path` |
+
+**The lazy fix reopens every hole.** When a table suddenly returns 42501, the quickest fix is a blanket `GRANT ... ON ALL TABLES ... TO anon`. That grant also covers every table where RLS was never turned on. This tool writes the other fix: **least-privilege grants that mirror your RLS policies**.
+
+```
+$ npx supabase-security migrations
+ CRITICAL  public.notes  supabase/migrations/20251031000000_fix_permission_denied.sql:2
+           Granted to anon, authenticated (via GRANT ... ON ALL TABLES at ...:10) but RLS is OFF:
+           every row is readable and writable by anyone with the anon key.
+           alter table public.notes enable row level security;
+
+ HIGH      public.orders  supabase/migrations/20250101000000_init.sql:16
+           No GRANT to anon/authenticated/service_role. New tables like this will be unreachable (42501)
+           after Oct 30, and on any new project/branch replaying this migration already.
+           grant select, insert on table public.orders to authenticated;  -- mirrors your RLS policies
+           grant select, insert, update, delete on table public.orders to service_role;
+
+ HIGH      ALL TABLES IN SCHEMA public  supabase/migrations/20251031000000_fix_permission_denied.sql:10
+           GRANT ALL ON ALL TABLES ... TO anon, authenticated hands 3 existing object(s) to anyone with
+           the anon key, RLS or not. The lazy fix reopens every hole.
+           revoke all on all tables in schema public from anon, authenticated;
+           grant select on table public.posts to anon;  -- what its RLS policies actually use
+
+Summary: 1 critical · 2 high · 0 medium · 0 low   fail-on high: 3 failing
+```
+
+```bash
+npx supabase-security migrations --fix-sql supabase/migrations/20261001000000_data_api_grants.sql  # proposed migration, review it
+npx supabase-security migrations path/to/migrations --schemas public,api --json                     # other dirs / exposed schemas
+npx supabase-security migrations --fail-on critical                                                 # exit 1 only on critical
+```
+
+Exposed schemas come from `[api] schemas` in `supabase/config.toml` (else `public`). Mark intentional exceptions with `-- supabase-security: ignore` above the statement, or `--ignore public.my_table`.
+
+### Add it to your PRs in 30 seconds (no secrets)
+
+```yaml
+# .github/workflows/supabase-grants.yml
+name: Supabase grants lint
+on:
+  pull_request:
+    paths: ['supabase/**']
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Perufitlife/supabase-security-skill@main
+        with:
+          mode: migrations        # no project-ref, no token
+          fail-on: high
+```
+
+You get inline annotations on the migration lines, a job summary, and the proposed migration as an artifact.
+
+> **Want this done + reviewed for you?** I'll apply least-privilege grants, fix the RLS gaps and verify it on a branch before Oct 30 → [perufitlife.github.io/supabase-security-skill/oct30](https://perufitlife.github.io/supabase-security-skill/oct30/)
+
+---
+
+## Live project audit (needs a Personal Access Token)
 
 ```
 $ supabase-security <project-ref> --html report.html
@@ -27,28 +93,9 @@ HTML report written to report.html
 Findings: 0 critical, 5 high, 2 medium
 ```
 
-[![npm](https://img.shields.io/npm/v/supabase-security?color=red)](https://www.npmjs.com/package/supabase-security) [![downloads](https://img.shields.io/npm/dw/supabase-security)](https://www.npmjs.com/package/supabase-security) [![GitHub stars](https://img.shields.io/github/stars/Perufitlife/supabase-security-skill?style=social)](https://github.com/Perufitlife/supabase-security-skill) [![Glama](https://img.shields.io/badge/Glama-approved-blueviolet)](https://glama.ai/mcp/servers/) ![license](https://img.shields.io/badge/license-MIT-green) ![node](https://img.shields.io/badge/node-%3E%3D18-blue)
+The migration linter reads your SQL. The live audit reads what is actually deployed, including anything changed in the Dashboard. It then hits PostgREST with your anon key to prove each leak.
 
-> **Sister tools** for other BaaS platforms (same `--discover` flag, all MIT):
-> [pocketbase-security](https://www.npmjs.com/package/pocketbase-security) · [appwrite-security](https://www.npmjs.com/package/appwrite-security) · [firebase-security](https://www.npmjs.com/package/firebase-security) · [nhost-security](https://www.npmjs.com/package/nhost-security) · [strapi-security](https://www.npmjs.com/package/strapi-security) · [directus-security](https://www.npmjs.com/package/directus-security) · [convex-security](https://www.npmjs.com/package/convex-security) · [hasura-security](https://www.npmjs.com/package/hasura-security) · [payload-security](https://www.npmjs.com/package/payload-security)
-
-> **Want it done for you?** Three productized services:
-> - [**RLS Audit Friday** — $99 / 24h](https://buy.stripe.com/3cIeVdgikfj47yx9LkcAo0m) — I run the audit on your project + send a PDF report by Friday EOD
-> - [**Vibe-code Security Review** — $199 / 48h](https://buy.stripe.com/bJe00jgik4EqdWV2iScAo0n) — full security review of AI-generated code (Cursor / Claude / v0 / Bolt)
-> - [**Sandbox-as-a-Service** — $499 / 48h](https://buy.stripe.com/aFa7sLc243Amf0Z5v4cAo0l) — custom partner integration sandbox for your API
-
-## Why
-
-On **May 30, 2026** Supabase changes its default for new projects: tables in `public` no longer auto-expose to the Data API. On **October 30, 2026** that becomes the enforced default for **all existing projects**.
-
-If you've been on Supabase for more than a few months, you almost certainly have:
-- Tables granted CRUD to `anon` by default (because that was the default).
-- One or two tables where RLS got missed.
-- `SECURITY DEFINER` functions that are technically callable by `anon`.
-
-This tool surfaces all of that in a single HTML report you can share with your team, plus copy-paste SQL to fix each issue.
-
-## What it finds (real example)
+### What it finds (real example)
 
 I ran this against my own apps. Two projects, similar size:
 
@@ -57,32 +104,27 @@ I ran this against my own apps. Two projects, similar size:
 | Internal CRM (auth-only) | 55 | 0 | 11 | 2 |
 | Public web app | 139 | **17** before fix | 5 | 2 |
 
-The public app had **17 tables with RLS disabled** and full CRUD to anon. They were leaking to anyone who pulled the anon key out of the JS bundle. Fixed in one SQL transaction generated by this tool.
+The public app had **17 tables with RLS disabled** and full CRUD to anon. Anyone who pulled the anon key out of the JS bundle could read them. I fixed them in one SQL transaction generated by this tool.
 
-## Install
+### Install
 
-No install needed — clone and run:
-
-```bash
-git clone https://github.com/Perufitlife/supabase-security-skill
-cd supabase-security-skill
-SUPABASE_ACCESS_TOKEN=sbp_xxx node scripts/audit.js YOUR_PROJECT_REF --html report.html
-```
-
-Or as an [Agent Skill](https://agentskills.io/) for Claude Code, Cursor, Cline:
+No install needed:
 
 ```bash
-# (when published to skills marketplace)
-npx skills add Perufitlife/supabase-security-skill
+SUPABASE_ACCESS_TOKEN=sbp_xxx npx supabase-security YOUR_PROJECT_REF --html report.html
 ```
 
-Then say: "audit my Supabase project ref `xxx`".
+Or clone and run: `git clone https://github.com/Perufitlife/supabase-security-skill && cd supabase-security-skill && SUPABASE_ACCESS_TOKEN=sbp_xxx node scripts/audit.js YOUR_PROJECT_REF --html report.html`.
 
-## Get a Personal Access Token
+Or as an [Agent Skill](https://agentskills.io/) for Claude Code, Cursor or Cline (when published to the skills marketplace): `npx skills add Perufitlife/supabase-security-skill`. Then say: "audit my Supabase project ref `xxx`" or "lint my migrations for Oct 30".
+
+Keyless variant for a local repo: `supabase-security --discover .` parses your code and probes only with the public anon key.
+
+### Get a Personal Access Token
 
 `https://supabase.com/dashboard/account/tokens` → "Generate new token". Read access is sufficient.
 
-## Checks performed
+### Checks performed
 
 | # | Check | Severity |
 |---|---|---|
@@ -95,6 +137,16 @@ Then say: "audit my Supabase project ref `xxx`".
 
 Every finding ships with copy-paste fix SQL. The HTML report has a "Copy all SQL" button to apply everything in one go.
 
+### Live audit in GitHub Actions
+
+```yaml
+- uses: Perufitlife/supabase-security-skill@v1.0.0-action
+  with:
+    project-ref: ${{ vars.SUPABASE_PROJECT_REF }}
+    token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    fail-on: critical
+```
+
 ## How it differs from the alternatives
 
 | | This | SupaExplorer | AuditYourApp |
@@ -103,54 +155,25 @@ Every finding ships with copy-paste fix SQL. The HTML report has a "Copy all SQL
 | Cost | Free, MIT | $6.75–$187 | $29/mo–$499 |
 | Source code | Public | Closed | Closed |
 | Generates fix SQL | Yes | Pro tier | Pro tier |
+| Lints migrations before deploy | Yes, no credentials | No | No |
 | Runs in CI | Trivially | API tier | API tier |
 
-This is fewer features than the SaaS players. The trade-off is full control of the data and zero recurring cost.
+## Limits: read these before trusting it
 
-## Run in CI
-
-```yaml
-# .github/workflows/supabase-security.yml
-- run: |
-    npx -y github:Perufitlife/supabase-security-skill \
-      ${{ secrets.SUPABASE_PROJECT_REF }} \
-      --html report.html
-- uses: actions/upload-artifact@v4
-  with: { name: supabase-security-report, path: report.html }
-```
-
-## Limits — read these before trusting it
-
+- **Migration linter**: it's a replay of your SQL, not a Postgres. It skips `DO` blocks, dynamic `EXECUTE` and objects created outside migrations (Dashboard, extensions). Grants mirror your policies, and it can't know which tables you meant to be public. It treats a policy using `auth.uid()` as authenticated-only.
 - Doesn't audit per-object Storage RLS (would mean iterating every file).
-- Can't revoke `supabase_admin` default privileges via SQL — that needs the Dashboard toggle. The report tells you so.
+- Can't revoke `supabase_admin` default privileges via SQL. That needs the Dashboard toggle, and the report tells you so.
 - App APIs that are intentionally exposed to anon (e.g. a `get_public_stats()` RPC) will appear as findings. **You decide which are intentional.**
-- Alpha. If you find a false positive or missed check, open an issue with the SQL output of the relevant `pg_*` query and I'll fix it.
+- Alpha. If you find a false positive or missed check, open an issue with the SQL that triggers it and I'll fix it.
 
 ## Roadmap
 
+- [x] Keyless migration linter for the Oct 30, 2026 change (`supabase-security migrations`)
 - [ ] Storage object-level scan
 - [ ] `pg_cron` scheduled-job audit
 - [ ] Edge Function secrets scan (env var leak detection)
-- [ ] Apify actor wrapper (one-click HTML report, no install)
 - [ ] MCP server with `audit` and `apply-fix` tools (preview + rollback)
-
-
-## Integration pattern reference
-
-See [`rotatepilot-skyx-sandbox`](https://github.com/Perufitlife/rotatepilot-skyx-sandbox) for a live demo of how a partner consumes one of our public REST APIs in a single static page — built 12-may-2026 in response to an aviation-platform partnership inbound. Same JSON-contract / CORS / edge-served approach we use for `supabase-security` integrations.
-
-## Sister AI text tools
-
-If your team writes outreach, PR descriptions, or social posts with AI, the [aitells](https://aitells.vercel.app) ecosystem catches the fingerprints before they ship:
-
-- [`@perufitlife/aitells-mcp`](https://www.npmjs.com/package/@perufitlife/aitells-mcp) — MCP server for Claude Code / Cursor. `detect_ai_tells` + `humanize_text` as native tools.
-- [`Perufitlife/aitells-action`](https://github.com/Perufitlife/aitells-action) — GitHub Action that scans PR titles/bodies/commits for AI patterns. Posts friendly summary comment.
-- [aitells.vercel.app](https://aitells.vercel.app) — free detector + $19 lifetime humanizer (first 100 buyers)
 
 ## License
 
 MIT.
-
----
-
-📚 Part of [**Awesome Backend Security Auditors**](https://github.com/Perufitlife/awesome-backend-security) — the full collection of keyless active-probe auditors.

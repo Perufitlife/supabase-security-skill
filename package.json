@@ -1,7 +1,7 @@
 {
   "name": "supabase-security",
-  "version": "0.4.2",
-  "description": "Audit Supabase security issues (RLS, grants, exposed functions) AND prove leaks live via active anon-key probe. Other auditors infer; this one fetches and shows the bytes leaked.",
+  "version": "0.5.0",
+  "description": "Keyless lint of your Supabase migrations for the Oct 30, 2026 Data API grants change (unreachable tables, grants without RLS, lazy blanket GRANTs) + least-privilege fix SQL. Also: audit Supabase security issues (RLS, grants, exposed functions) AND prove leaks live via active anon-key probe. Other auditors infer; this one fetches and shows the bytes leaked.",
   "type": "module",
   "bin": {
     "supabase-security": "./scripts/cli.js"
@@ -10,6 +10,8 @@
     "audit": "node scripts/audit.js",
     "report": "node scripts/report.js",
     "remediate": "node scripts/remediate.js",
+    "migrations": "node scripts/cli.js migrations",
+    "test": "node --test test/migrations.test.js",
     "postinstall": "node scripts/postinstall.js || true"
   },
   "keywords": [
@@ -17,6 +19,10 @@
     "security",
     "rls",
     "audit",
+    "migrations",
+    "grants",
+    "data-api",
+    "postgrest",
     "postgres",
     "ai-skill"
   ],

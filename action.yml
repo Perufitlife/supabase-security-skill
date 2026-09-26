@@ -1,21 +1,37 @@
 name: 'Supabase Security Audit'
-description: 'Audit your Supabase project for RLS leaks, exposed buckets, anon-readable tables. Active anon-key probe confirms each finding live.'
+description: 'Lint Supabase migrations for the Oct 30, 2026 grants change (no secrets), or audit a live project for RLS leaks with an active anon-key probe.'
 author: 'Renzo Madueno (@Perufitlife)'
 branding:
   icon: 'shield'
   color: 'green'
 
 inputs:
+  mode:
+    description: 'audit (default: live project scan, needs project-ref + token) or migrations (lint supabase/migrations on PRs, no secrets needed)'
+    required: false
+    default: 'audit'
   project-ref:
-    description: 'Supabase project reference (the subdomain in your *.supabase.co URL)'
-    required: true
+    description: 'audit mode: Supabase project reference (the subdomain in your *.supabase.co URL)'
+    required: false
   token:
-    description: 'Supabase Personal Access Token (read-only is enough). Generate at https://supabase.com/dashboard/account/tokens'
-    required: true
+    description: 'audit mode: Supabase Personal Access Token (read-only is enough). Generate at https://supabase.com/dashboard/account/tokens'
+    required: false
   output-path:
-    description: 'Path for the HTML report'
+    description: 'audit mode: path for the HTML report'
     required: false
     default: 'supabase-security-report.html'
+  migrations-dir:
+    description: 'migrations mode: directory with your SQL migrations'
+    required: false
+    default: 'supabase/migrations'
+  schemas:
+    description: 'migrations mode: comma-separated exposed schemas (default: [api].schemas from supabase/config.toml, else public)'
+    required: false
+    default: ''
+  fix-sql-path:
+    description: 'migrations mode: where to write the proposed least-privilege migration (uploaded as an artifact)'
+    required: false
+    default: 'supabase-security-grants.sql'
   fail-on:
     description: 'Severity to fail the workflow on: critical, high, medium, low, never'
     required: false
@@ -30,16 +46,19 @@ inputs:
 outputs:
   critical-count:
     description: 'Number of CRITICAL findings'
-    value: ${{ steps.scan.outputs.critical }}
+    value: ${{ steps.scan.outputs.critical || steps.lint.outputs.critical }}
   high-count:
     description: 'Number of HIGH findings'
-    value: ${{ steps.scan.outputs.high }}
+    value: ${{ steps.scan.outputs.high || steps.lint.outputs.high }}
   grade:
-    description: 'Letter grade (A+ to F)'
+    description: 'audit mode: letter grade (A+ to F)'
     value: ${{ steps.scan.outputs.grade }}
   report-path:
-    description: 'Path of the generated HTML report'
+    description: 'audit mode: path of the generated HTML report'
     value: ${{ inputs.output-path }}
+  fix-sql-path:
+    description: 'migrations mode: path of the proposed migration (only written when there are findings)'
+    value: ${{ steps.lint.outputs.fix-sql }}
 
 runs:
   using: 'composite'
@@ -49,8 +68,57 @@ runs:
       with:
         node-version: '20'
 
+    - name: Lint migrations for the Oct 30, 2026 Data API change
+      id: lint
+      if: ${{ inputs.mode == 'migrations' }}
+      shell: bash
+      env:
+        MIG_DIR: ${{ inputs.migrations-dir }}
+        SCHEMAS: ${{ inputs.schemas }}
+        FIX_SQL: ${{ inputs.fix-sql-path }}
+        FAIL_ON: ${{ inputs.fail-on }}
+        CLI: ${{ github.action_path }}/scripts/cli.js
+      run: |
+        ARGS=("$MIG_DIR" --fail-on "$FAIL_ON" --fix-sql "$FIX_SQL")
+        [[ -n "$SCHEMAS" ]] && ARGS+=(--schemas "$SCHEMAS")
+
+        # Machine-readable pass for outputs + webhook (never fails the step).
+        node "$CLI" migrations "${ARGS[@]}" --fail-on never --json > findings.json || true
+        count() { node -e "try{const j=JSON.parse(require('fs').readFileSync('findings.json','utf8'));console.log(j.summary['$1']||0)}catch{console.log(0)}"; }
+        CRIT=$(count critical)
+        HIGH=$(count high)
+        echo "critical=$CRIT" >> "$GITHUB_OUTPUT"
+        echo "high=$HIGH" >> "$GITHUB_OUTPUT"
+        [[ -f "$FIX_SQL" ]] && echo "fix-sql=$FIX_SQL" >> "$GITHUB_OUTPUT"
+
+        # Human pass: log + inline PR annotations + job summary. Its exit code applies --fail-on.
+        set +e
+        NO_COLOR=1 node "$CLI" migrations "${ARGS[@]}" --github > lint.txt
+        CODE=$?
+        set -e
+        cat lint.txt
+        {
+          echo "## Supabase Oct 30 grants lint"
+          echo
+          echo "**$CRIT critical · $HIGH high** (fail-on: \`$FAIL_ON\`)"
+          echo
+          echo '```'
+          grep -v '^::' lint.txt || true
+          echo '```'
+          if [[ -f "$FIX_SQL" ]]; then
+            echo "<details><summary>Proposed least-privilege migration (<code>$FIX_SQL</code>, also uploaded as an artifact)</summary>"
+            echo
+            echo '```sql'
+            cat "$FIX_SQL"
+            echo '```'
+            echo "</details>"
+          fi
+        } >> "$GITHUB_STEP_SUMMARY"
+        exit $CODE
+
     - name: Run supabase-security audit
       id: scan
+      if: ${{ inputs.mode != 'migrations' }}
       shell: bash
       env:
         PROJECT_REF: ${{ inputs.project-ref }}
@@ -58,6 +126,10 @@ runs:
         OUTPUT_PATH: ${{ inputs.output-path }}
         FAIL_ON: ${{ inputs.fail-on }}
       run: |
+        if [[ -z "$PROJECT_REF" || -z "$SUPABASE_ACCESS_TOKEN" ]]; then
+          echo "::error::audit mode needs project-ref and token (or use mode: migrations, which needs no secrets)"
+          exit 1
+        fi
         echo "::group::Running supabase-security@latest"
         npx -y supabase-security@latest "$PROJECT_REF" \
           --html "$OUTPUT_PATH" \
@@ -94,8 +166,18 @@ runs:
         echo "Findings posted to webhook."
 
     - name: Upload HTML report artifact
+      if: ${{ inputs.mode != 'migrations' }}
       uses: actions/upload-artifact@v4
       with:
         name: supabase-security-report
         path: ${{ inputs.output-path }}
+        retention-days: 14
+
+    - name: Upload proposed migration
+      if: ${{ always() && inputs.mode == 'migrations' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: supabase-security-grants
+        path: ${{ inputs.fix-sql-path }}
+        if-no-files-found: ignore
         retention-days: 14
