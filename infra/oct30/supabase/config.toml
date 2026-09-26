@@ -1,0 +1,14 @@
+# Only used to deploy the oct30-* edge functions to the renzoos project (ref mknvxxhaatnqsrkcjydc):
+#   supabase functions deploy oct30-check oct30-nurture oct30-unsub oct30-stripe oct30-event --project-ref mknvxxhaatnqsrkcjydc --use-api
+project_id = "oct30"
+
+[functions.oct30-check]
+verify_jwt = false
+[functions.oct30-nurture]
+verify_jwt = false
+[functions.oct30-unsub]
+verify_jwt = false
+[functions.oct30-stripe]
+verify_jwt = false
+[functions.oct30-event]
+verify_jwt = false

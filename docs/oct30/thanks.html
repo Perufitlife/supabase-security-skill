@@ -150,6 +150,7 @@ footer p{margin:0}
   var alias={fixpack:'fix','fix-pack':'fix',oct30:'fix',harden:'hardening',proof:'hardening',agency:'fleet'};
   var q=(new URLSearchParams(location.search).get('tier')||'').toLowerCase().trim();
   q=alias[q]||q;
+  try{ var sid=sessionStorage.getItem('oct30-sid'); navigator.sendBeacon('https://mknvxxhaatnqsrkcjydc.supabase.co/functions/v1/oct30-event',new Blob([JSON.stringify({tipo:'thanks_view',page:location.pathname,target:q||null,sid:sid})],{type:'text/plain'})); }catch(e){}
   var t=TIERS[q];
   if(!t){ d.getElementById('unknown').hidden=false; return setMail(null); }
   d.getElementById('paid').textContent='Payment received: '+t.name;

@@ -51,7 +51,7 @@
   --paper:#eef1f4; --paper-2:#e3e8ed; --card:#ffffff;
   --ink:#0f1b26; --ink-2:#3f4d59; --ink-3:#66737f; --rule:#d0d8df;
   --deny:#c3301f; --deny-bg:#fbe9e6; --grant:#0b6e5c; --grant-bg:#e2f1ec;
-  --btn:#0f1b26; --btn-ink:#ffffff;
+  --btn:#0f1b26; --btn-ink:#ffffff; --warn:#8a5a00; --warn-bg:#fdf1d8;
   --code:#111c25; --code-2:#0b141b; --code-ink:#d6dee5; --code-dim:#7f8e9a; --code-k:#8fb9e3; --code-s:#d9c77c; --code-bad:#ff8a7a; --code-ok:#6fd6b4;
   --f:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
   --m:"Fragment Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
@@ -62,7 +62,7 @@
     --paper:#0c1319; --paper-2:#111b23; --card:#121d26;
     --ink:#e7edf2; --ink-2:#aab6c0; --ink-3:#7f8c98; --rule:#233340;
     --deny:#ff7361; --deny-bg:#2a1714; --grant:#45c9a4; --grant-bg:#10271f;
-    --btn:#e7edf2; --btn-ink:#0c1319;
+    --btn:#e7edf2; --btn-ink:#0c1319; --warn:#f0b84a; --warn-bg:#2a2110;
     --code:#080f14; --code-2:#050a0e;
   }
 }
@@ -70,7 +70,7 @@
   --paper:#0c1319; --paper-2:#111b23; --card:#121d26;
   --ink:#e7edf2; --ink-2:#aab6c0; --ink-3:#7f8c98; --rule:#233340;
   --deny:#ff7361; --deny-bg:#2a1714; --grant:#45c9a4; --grant-bg:#10271f;
-  --btn:#e7edf2; --btn-ink:#0c1319;
+  --btn:#e7edf2; --btn-ink:#0c1319; --warn:#f0b84a; --warn-bg:#2a2110;
   --code:#080f14; --code-2:#050a0e;
 }
 *,*::before,*::after{box-sizing:border-box}
@@ -296,6 +296,68 @@ footer a{color:var(--ink-2)}
 .theme{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border:1px solid var(--rule);border-radius:8px;background:transparent;color:var(--ink-2);font:inherit;font-size:13.5px;cursor:pointer}
 .theme .ico{width:15px;height:15px}
 
+/* free check */
+#check,.res,.ferr{scroll-margin-top:76px}
+.chk{background:var(--paper-2)}
+.chk-grid{display:grid;gap:28px}
+.chk-grid>*{min-width:0}
+@media (min-width:1040px){.chk-grid{grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}}
+.free-tag{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--grant);background:var(--grant-bg);padding:5px 12px 5px 10px;border-radius:999px;margin:0 0 14px}
+.free-tag .ico{width:16px;height:16px}
+.nontech{display:flex;gap:12px;margin:22px 0 0;padding:14px 16px;border-radius:12px;background:var(--card);border:1px solid var(--rule);font-size:15.5px;line-height:1.45;color:var(--ink-2)}
+.nontech .ico{color:var(--grant);width:20px;height:20px;margin-top:2px}
+.nontech b{color:var(--ink)}
+.chk .sec-lede code,.chk .free-list code,.chk .micro code{background:var(--card);padding:.08em .35em;border-radius:5px;color:var(--ink)}
+.fcard{background:var(--card);border:1px solid var(--rule);border-radius:16px;padding:20px 16px;box-shadow:0 30px 60px -44px rgba(15,27,38,.5)}
+@media (min-width:640px){.fcard{padding:26px}}
+.fld{display:grid;gap:6px;margin:0 0 16px}
+.fld>label,.fld>legend{font-weight:650;font-size:15px;padding:0}
+.fld .hint{font-size:13.5px;color:var(--ink-3);margin:0;font-weight:400}
+.fcard input[type=email],.fcard input[type=url],.fcard input[type=text],.fcard select,.fcard textarea{width:100%;min-height:50px;padding:12px 14px;border-radius:10px;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink);font:inherit;font-size:16px}
+.fcard textarea{min-height:84px;resize:vertical}
+.fcard input:focus,.fcard select:focus,.fcard textarea:focus{outline:none;border-color:var(--grant);box-shadow:0 0 0 3px color-mix(in srgb,var(--grant) 22%,transparent)}
+.fcard input:disabled{opacity:.45}
+fieldset.fld{border:0;margin:0 0 16px;padding:0;min-width:0}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.roles label{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;min-height:50px;padding:6px 8px;border:1.5px solid var(--rule);border-radius:10px;cursor:pointer;font-size:14.5px;font-weight:600;line-height:1.2;color:var(--ink-2);background:var(--paper)}
+.roles input{position:absolute;opacity:0;pointer-events:none}
+.roles label:has(input:checked){border-color:var(--ink);color:var(--ink);background:var(--card);box-shadow:inset 0 0 0 1px var(--ink)}
+.roles label:has(input:focus-visible){outline:3px solid var(--grant);outline-offset:2px}
+.chkline{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;line-height:1.4;color:var(--ink-2);cursor:pointer;margin:0 0 14px}
+.chkline input{width:20px;height:20px;margin:1px 0 0;flex:none;accent-color:var(--grant)}
+.norepo[hidden]{display:none}
+.norepo{margin:-4px 0 16px;padding:14px;border-radius:10px;background:var(--paper);border:1px dashed var(--rule)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.fcard .btn{width:100%}
+.fcard .btn[disabled]{opacity:.7;cursor:progress;transform:none}
+.fnote{margin:12px 0 0;font-size:13.5px;color:var(--ink-3)}
+.ferr{margin:0 0 14px;padding:10px 12px;border-radius:8px;background:var(--deny-bg);color:var(--deny);font-size:14.5px;font-weight:600}
+.ferr[hidden],.res[hidden],.prog[hidden]{display:none}
+.res:focus{outline:none}
+.light{display:flex;gap:14px;align-items:center;padding:16px;border-radius:12px;background:var(--grant-bg);color:var(--grant)}
+.light .ico{width:34px;height:34px;flex:none;stroke-width:2.2}
+.light b{display:block;font-size:1.15rem;line-height:1.2}
+.light span{display:block;font-size:14.5px;color:var(--ink-2);margin-top:3px}
+.light.red{background:var(--deny-bg);color:var(--deny)}
+.light.amber{background:var(--warn-bg);color:var(--warn)}
+.light.grey{background:var(--paper-2);color:var(--ink-2)}
+.res h3{margin:18px 0 8px;font-size:1.02rem}
+.res ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.res li{display:flex;gap:10px;font-size:15px;line-height:1.45;color:var(--ink-2)}
+.res li .ico{width:17px;height:17px;margin-top:3px;color:var(--deny)}
+.res li.m .ico{color:var(--warn)}
+.res .meta{margin:12px 0 0;font-size:13.5px;color:var(--ink-3)}
+.res p.body{margin:14px 0 0;font-size:15px;color:var(--ink-2)}
+.sent{display:flex;gap:10px;align-items:flex-start;margin:16px 0 0;padding:12px 14px;border-radius:10px;border:1px solid var(--rule);font-size:15px;line-height:1.4}
+.sent .ico{color:var(--grant);width:20px;height:20px;margin-top:1px}
+.res .next{display:grid;gap:10px;margin-top:16px}
+.res .next .btn{width:100%}
+.res .again{background:none;border:0;padding:6px 0;color:var(--ink-2);font:inherit;font-size:14.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;justify-self:start}
+.prog{display:flex;gap:10px;align-items:center;margin:14px 0 0;font-size:14.5px;color:var(--ink-2)}
+.spin{width:18px;height:18px;flex:none;border-radius:50%;border:2.5px solid var(--rule);border-top-color:var(--grant);animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+
 /* mobile buy bar */
 .bar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--rule);box-shadow:0 -12px 30px -20px rgba(15,27,38,.4);transform:translateY(110%);transition:transform .22s ease}
 .bar.on{transform:none}
@@ -323,6 +385,7 @@ footer a{color:var(--ink-2)}
   <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></symbol>
   <symbol id="i-mail" viewBox="0 0 24 24"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></symbol>
 </svg>
 
@@ -332,6 +395,7 @@ footer a{color:var(--ink-2)}
       <svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg>supabase-security<span>/ Oct 30</span>
     </a>
     <nav aria-label="Page">
+      <a class="t hide-s" href="#check">Free check</a>
       <a class="t hide-s" href="#plans">Plans</a>
       <a class="t hide-s" href="#faq">FAQ</a>
       <a class="btn sm" href="#plans">See plans</a>
@@ -349,10 +413,10 @@ footer a{color:var(--ink-2)}
     <div class="hero-text">
       <p class="lede">From Oct 30, new tables in <code>public</code> get no automatic access for the API roles. Existing tables keep theirs, but the next table you create, and every migration replayed on a fresh project, returns <code>42501</code>. The bulk grant in Supabase&rsquo;s own rollback fixes that by reopening <code>anon</code>. We send a pull request with per-table grants, verified against your row level security, plus a CI check.</p>
       <div class="ctas" data-cta>
-        <a class="btn" href="https://buy.stripe.com/3cI28rc24ef05qp5v4cAo0v">Get the Fix Pack, $490</a>
-        <a class="btn ghost" href="#free">See the check we run</a>
+        <a class="btn grant" href="#check">Check my repo free</a>
+        <a class="btn ghost" href="https://buy.stripe.com/3cI28rc24ef05qp5v4cAo0v">Get the Fix Pack, $490</a>
       </div>
-      <p class="micro">One project. Pull request within 48 hours of access, or a full refund.</p>
+      <p class="micro">Free check: paste your GitHub link, see the result in seconds. Fix Pack: one project, pull request within 48 hours of access, or a full refund.</p>
 
       <div class="tl" id="tl" style="--p:82%">
         <div class="tl-bar" role="img" aria-label="Timeline: announced April 28, default for new projects May 30, applied to all existing projects October 30, 2026"><span class="tl-today" title="Today"></span><span class="tl-end"></span></div>
@@ -470,6 +534,63 @@ footer a{color:var(--ink-2)}
         </div>
       </div>
       <p class="demo-foot">Behavior as described in <a href="https://supabase.com/changelog/45329-breaking-change-tables-not-exposed-to-data-and-graphql-api-automatically" rel="noopener">Supabase&rsquo;s changelog of Apr 28, 2026</a>. Table names are examples.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec chk" id="check" aria-labelledby="h-check">
+  <div class="wrap chk-grid">
+    <div>
+      <p class="free-tag"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg>Free, no credentials</p>
+      <h2 id="h-check">Is your Supabase app ready for Oct&nbsp;30? Check it in a minute.</h2>
+      <p class="sec-lede">Paste your GitHub repo. We read the SQL in <code>supabase/migrations</code>, show you red, amber or green right here, and email you the full report: what it means for your business in plain English, then the technical detail and the SQL to fix it.</p>
+      <div class="nontech"><svg class="ico" aria-hidden="true"><use href="#i-spark"/></svg><span><b>Built it with Lovable, Bolt or Cursor?</b> Paste your project&rsquo;s GitHub link. On Lovable: open the project, click <b>GitHub</b> (top right), connect it, then copy the repo link. No GitHub at all? Tick &ldquo;I don&rsquo;t have a repo&rdquo; and we&rsquo;ll email you how to check it from the Supabase dashboard.</span></div>
+      <ul class="free-list">
+        <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Tables anyone with your public key can read or change</span></li>
+        <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Tables that will fail with <code>42501</code> after Oct 30, or on a fresh deploy today</span></li>
+        <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>The &ldquo;lazy fix&rdquo; bulk grant, and database functions anyone can call</span></li>
+      </ul>
+      <p class="micro">We read your code only; nothing touches your database. Public repos. Private one? Run <code>npx supabase-security migrations</code> locally.</p>
+    </div>
+
+    <div class="fcard" data-cta>
+      <form id="ckform" novalidate>
+        <p class="ferr" id="ckerr" role="alert" hidden></p>
+        <div class="fld">
+          <label for="ck-email">Email for the report</label>
+          <input id="ck-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="you@company.com">
+        </div>
+        <div class="fld">
+          <label for="ck-repo">GitHub repo link</label>
+          <input id="ck-repo" name="repo" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://github.com/you/your-app">
+          <p class="hint">Monorepo? Link the folder, e.g. &hellip;/tree/main/apps/web</p>
+        </div>
+        <label class="chkline"><input type="checkbox" id="ck-norepo"> I don&rsquo;t have a GitHub repo</label>
+        <div class="norepo" id="ck-norepo-box" hidden>
+          <div class="fld">
+            <label for="ck-stack">How did you build it?</label>
+            <select id="ck-stack"><option value="">Choose one</option><option>Lovable</option><option>Bolt</option><option>Cursor / Claude Code / other AI</option><option>v0</option><option>Written by hand</option><option>A developer or agency built it</option><option>Other</option></select>
+          </div>
+          <div class="fld" style="margin:0">
+            <label for="ck-desc">What does your app do? <span class="hint">(optional)</span></label>
+            <textarea id="ck-desc" maxlength="1000" placeholder="e.g. booking app, 800 users, stores names and phone numbers"></textarea>
+          </div>
+        </div>
+        <fieldset class="fld">
+          <legend>You are</legend>
+          <div class="roles">
+            <label><input type="radio" name="role" value="owner" checked>Founder / owner</label>
+            <label><input type="radio" name="role" value="dev">Developer</label>
+            <label><input type="radio" name="role" value="agency">Agency</label>
+          </div>
+        </fieldset>
+        <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" id="ck-website" tabindex="-1" autocomplete="off"></label></div>
+        <label class="chkline"><input type="checkbox" id="ck-consent"> Email me the report and up to 7 short notes about the Oct 30 change. One-click unsubscribe.</label>
+        <button class="btn" type="submit" id="ck-btn">Check my repo</button>
+        <p class="prog" id="ckprog" hidden aria-live="polite"><span class="spin" aria-hidden="true"></span><span id="ckprog-t">Reading your repo&hellip;</span></p>
+        <p class="fnote">Free. We never ask for keys or passwords.</p>
+      </form>
+      <div class="res" id="ckres" hidden aria-live="polite" tabindex="-1"></div>
     </div>
   </div>
 </section>
@@ -754,6 +875,112 @@ footer a{color:var(--ink-2)}
     d.querySelectorAll('[data-cta]').forEach(function(el){ io.observe(el); });
   }
 })();
+</script>
+<script>
+/* free check + light analytics (no cookies, no IP, no email in events) */
+(function(){
+  var d=document, FN='https://mknvxxhaatnqsrkcjydc.supabase.co/functions/v1/';
+  var ss={get:function(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},set:function(k,v){try{sessionStorage.setItem(k,v);}catch(e){}}};
+  var sid=ss.get('oct30-sid'); if(!sid){ sid=Math.random().toString(36).slice(2,12)+Date.now().toString(36); ss.set('oct30-sid',sid); }
+  var q=new URLSearchParams(location.search), utm={};
+  ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function(k){ var v=q.get(k)||ss.get('oct30-'+k); if(v){ utm[k]=v; ss.set('oct30-'+k,v); } });
+  var ref=ss.get('oct30-ref'); if(ref===null){ ref=d.referrer && d.referrer.indexOf(location.host)===-1 ? d.referrer : ''; ss.set('oct30-ref',ref); }
+  function track(tipo,target,meta){
+    var body=JSON.stringify({tipo:tipo,page:location.pathname,target:target||null,sid:sid,utm:utm,ref:ref,meta:meta||null});
+    try{ if(navigator.sendBeacon && navigator.sendBeacon(FN+'oct30-event',new Blob([body],{type:'text/plain'}))) return; }catch(e){}
+    try{ fetch(FN+'oct30-event',{method:'POST',body:body,keepalive:true,headers:{'content-type':'text/plain'}}); }catch(e){}
+  }
+  window.oct30track=track;
+  if(!/[?&]notrack/.test(location.search)) track('page_view');
+
+  /* clicks: buy links (tier from the Stripe URL), anchors to the check, anything tagged */
+  var TIERS={'3cI28rc24ef05qp5v4cAo0v':'fixpack','6oUfZh7LOgn85qp9LkcAo0w':'hardening','aFa00j0jm9YKf0Z6z8cAo0x':'fleet'};
+  function tierOf(h){ for(var k in TIERS) if(h.indexOf(k)!==-1) return TIERS[k]; return null; }
+  d.addEventListener('click',function(e){
+    var a=e.target.closest && e.target.closest('a'); if(!a) return;
+    var h=a.getAttribute('href')||'', t=tierOf(h);
+    var where=(a.closest('section')||{}).id||(a.closest('.bar')?'bar':'top');
+    if(t) track('cta_click','buy:'+t,{where:where});
+    else if(h==='#check') track('cta_click','check:'+where);
+    else if(h==='#plans') track('cta_click','plans:'+where);
+  },true);
+  /* pass attribution (and the email, once we know it) to Stripe payment links */
+  function stampLinks(email){
+    d.querySelectorAll('a[href^="https://buy.stripe.com/"]').forEach(function(a){
+      try{ var u=new URL(a.href); u.searchParams.set('client_reference_id','oct30_'+sid); if(email) u.searchParams.set('prefilled_email',email); a.href=u.toString(); }catch(e){}
+    });
+  }
+  stampLinks(null);
+  var s50=false,s90=false;
+  addEventListener('scroll',function(){ var p=(scrollY+innerHeight)/d.documentElement.scrollHeight; if(!s50&&p>.5){s50=true;track('scroll_50');} if(!s90&&p>.9){s90=true;track('scroll_90');} },{passive:true});
+  d.querySelectorAll('.faq details').forEach(function(el){ el.addEventListener('toggle',function(){ if(el.open) track('faq_open',(el.querySelector('summary')||{}).textContent.slice(0,80)); }); });
+
+  /* the form */
+  var f=d.getElementById('ckform'); if(!f) return;
+  var em=d.getElementById('ck-email'), repo=d.getElementById('ck-repo'), nr=d.getElementById('ck-norepo'), nrb=d.getElementById('ck-norepo-box');
+  var cons=d.getElementById('ck-consent'), btn=d.getElementById('ck-btn'), err=d.getElementById('ckerr'), prog=d.getElementById('ckprog'), progT=d.getElementById('ckprog-t'), res=d.getElementById('ckres');
+  var started=false;
+  f.addEventListener('focusin',function(){ if(!started){ started=true; track('check_start'); } });
+  nr.addEventListener('change',function(){ nrb.hidden=!nr.checked; repo.disabled=nr.checked; if(nr.checked) repo.value=''; });
+  function showErr(m){ err.textContent=m; err.hidden=false; err.scrollIntoView({block:'nearest',behavior:'smooth'}); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  var L={
+    red:{t:'Red: data may be exposed',s:'Based on the SQL in your repo, someone with your public key can reach data or functions they shouldn’t.',i:'#i-no'},
+    amber:{t:'Amber: new tables will fail after Oct 30',s:'Nothing we can see is exposed, and nothing breaks by itself on Oct 30. New tables without grants will.',i:'#i-alert'},
+    green:{t:'Green: ready for Oct 30',s:'Every exposed table and function has explicit grants backed by access rules.',i:'#i-ok'},
+    grey:{t:'Not checked yet',s:'',i:'#i-mail'}
+  };
+  var BUY={fixpack:['https://buy.stripe.com/3cI28rc24ef05qp5v4cAo0v','Get the Fix Pack, $490'],hardening:['https://buy.stripe.com/6oUfZh7LOgn85qp9LkcAo0w','Get Hardening + Proof, $1,490'],fleet:['https://buy.stripe.com/aFa00j0jm9YKf0Z6z8cAo0x','Get Agency Fleet, $4,900']};
+  function buyBtn(k,ghost){ return '<a class="btn'+(ghost?' ghost':'')+'" href="'+BUY[k][0]+'">'+BUY[k][1]+'</a>'; }
+  function render(j,email,role){
+    var light=j.status==='checked'?j.light:'grey', l=L[light], h='';
+    var grey={no_repo:['We’ve emailed you how to check it','Without a repo we can’t read your migrations. The email has a 2-minute, read-only check you can run from the Supabase dashboard.'],
+      repo_unreadable:['We couldn’t read that repo','It’s private or doesn’t exist. Run npx supabase-security migrations in the repo folder, or make it public for a minute and try again.'],
+      no_migrations:['No migrations in that repo','Tables made in the dashboard (or by Lovable/Bolt) leave no SQL to read. We’ve emailed you a read-only query that answers it from the Supabase dashboard.'],
+      repo_error:['That repo is too big for the free check','Run npx supabase-security migrations in the repo folder: same check, on your machine.']}[j.status]||['Done',''];
+    h+='<div class="light '+light+'"><svg class="ico" aria-hidden="true"><use href="'+l.i+'"/></svg><div><b>'+esc(light==='grey'?grey[0]:l.t)+'</b><span>'+esc(light==='grey'?grey[1]:l.s)+'</span></div></div>';
+    if(j.status==='checked'){
+      if(j.top&&j.top.length){ h+='<h3>What it means</h3><ul>'+j.top.map(function(x){ return '<li class="'+(x.severity==='medium'?'m':'')+'"><svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg><span>'+esc(x.text)+'</span></li>'; }).join('')+'</ul>'; }
+      h+='<p class="meta">'+esc(j.repo)+' · '+esc(j.branch)+' · '+j.files+' SQL file'+(j.files===1?'':'s')+' in '+esc(j.root)+(j.partial?' (first '+j.files+' of '+j.total_files+')':'')+' · '+j.findings+' finding'+(j.findings===1?'':'s')+'</p>';
+    }
+    h+='<p class="sent"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg><span>'+(j.emailed?'We’ve emailed the full report to <b>'+esc(email)+'</b>. Not there in 2 minutes? Check Promotions or spam.':'Your report is queued and will reach <b>'+esc(email)+'</b> within the hour.')+'</span></p>';
+    var next='';
+    if(role==='agency') next=buyBtn('fleet')+buyBtn('fixpack',true);
+    else if(light==='red') next=buyBtn('hardening')+buyBtn('fixpack',true);
+    else if(light==='amber'||light==='grey') next=buyBtn('fixpack')+'<a class="btn ghost" href="#plans">Compare plans</a>';
+    else next='<p class="body">Keep it green for free: add <code>mode: migrations</code> to a GitHub workflow (below) and every pull request gets this check.</p><a class="btn ghost" href="#free">Get the CI check</a>';
+    if(light!=='green') h+='<p class="body">Want it fixed for you? A pull request with per-table grants, checked against your access rules, in 48 hours, or a full refund.</p>';
+    h+='<div class="next">'+next+'<button class="again" type="button" id="ck-again">Check another repo</button></div>';
+    res.innerHTML=h; res.hidden=false; f.hidden=true; stampLinks(email);
+    d.getElementById('ck-again').addEventListener('click',function(){ res.hidden=true; f.hidden=false; repo.value=''; repo.focus(); });
+    res.focus({preventScroll:true}); res.scrollIntoView({block:'start',behavior:'smooth'});
+  }
+  f.addEventListener('submit',function(e){
+    e.preventDefault(); err.hidden=true;
+    var email=em.value.trim(), r=repo.value.trim(), noRepo=nr.checked, role=(f.querySelector('input[name=role]:checked')||{}).value||'owner';
+    if(!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)){ em.focus(); return showErr('Enter the email where you want the report.'); }
+    if(!noRepo && !/github\.com\/[^\/\s]+\/[^\/\s]+/i.test(r) && !/^[\w.-]+\/[\w.-]+$/.test(r)){ repo.focus(); return showErr('Paste a GitHub repo link like https://github.com/you/your-app, or tick “I don’t have a GitHub repo”.'); }
+    if(!cons.checked){ cons.focus(); return showErr('Tick the box so we can email you the report.'); }
+    track('check_submit',noRepo?'no_repo':'repo',{role:role});
+    btn.disabled=true; prog.hidden=false;
+    var msgs=noRepo?['Saving your request…','Writing your email…']:['Reading your repo…','Replaying your migrations…','Checking grants and access rules…','Writing your report…'], mi=0;
+    progT.textContent=msgs[0];
+    var timer=setInterval(function(){ mi=Math.min(mi+1,msgs.length-1); progT.textContent=msgs[mi]; },2600);
+    var payload={email:email,repo:noRepo?'':r,no_repo:noRepo,role:role,consent:true,stack:d.getElementById('ck-stack').value,description:d.getElementById('ck-desc').value,
+      website:d.getElementById('ck-website').value,utm:utm,referrer:ref,page:location.pathname,source:utm.utm_source||''};
+    var ctl=window.AbortController?new AbortController():null, to=setTimeout(function(){ if(ctl) ctl.abort(); },60000);
+    fetch(FN+'oct30-check',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),signal:ctl?ctl.signal:undefined})
+      .then(function(x){ return x.json().catch(function(){ return {ok:false,error:'Unexpected answer ('+x.status+'). Please try again.'}; }); })
+      .then(function(j){
+        if(!j.ok){ track('check_error',String(j.error||'').slice(0,80)); return showErr(j.error||'Something went wrong. Please try again.'); }
+        track('check_result',j.status,{light:j.light||'grey',findings:j.findings||0,role:role});
+        render(j,email,role);
+      })
+      .catch(function(){ track('check_error','network'); showErr('We couldn’t reach the checker. Please try again in a minute, or run npx supabase-security migrations locally.'); })
+      .then(function(){ clearTimeout(to); clearInterval(timer); btn.disabled=false; prog.hidden=true; });
+  });
+})();
+
 </script>
 </body>
 </html>

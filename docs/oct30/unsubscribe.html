@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Unsubscribe | supabase-security</title>
+<meta name="color-scheme" content="light dark">
+<style>
+:root{--paper:#eef1f4;--card:#fff;--ink:#0f1b26;--ink-2:#3f4d59;--rule:#d0d8df;--grant:#0b6e5c;--deny:#c3301f;--btn:#0f1b26;--btn-ink:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0c1319;--card:#121d26;--ink:#e7edf2;--ink-2:#aab6c0;--rule:#233340;--grant:#45c9a4;--deny:#ff7361;--btn:#e7edf2;--btn-ink:#0c1319}}
+:root[data-theme="dark"]{--paper:#0c1319;--card:#121d26;--ink:#e7edf2;--ink-2:#aab6c0;--rule:#233340;--grant:#45c9a4;--deny:#ff7361;--btn:#e7edf2;--btn-ink:#0c1319}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px 16px;background:var(--paper);color:var(--ink);font:17px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{width:100%;max-width:460px;background:var(--card);border:1px solid var(--rule);border-radius:16px;padding:28px 22px}
+h1{margin:0 0 10px;font-size:1.5rem;line-height:1.2}
+p{margin:0 0 16px;color:var(--ink-2)}
+button{width:100%;min-height:52px;border:0;border-radius:10px;background:var(--btn);color:var(--btn-ink);font:inherit;font-weight:650;cursor:pointer}
+button[disabled]{opacity:.6;cursor:progress}
+.ok{color:var(--grant);font-weight:650}.bad{color:var(--deny);font-weight:650}
+small{display:block;margin-top:18px;color:var(--ink-2);font-size:13px}
+a{color:inherit}
+</style>
+</head>
+<body>
+<main>
+  <h1>Unsubscribe from the Oct 30 emails</h1>
+  <p id="msg">One click and you won&rsquo;t get any more emails from this sequence.</p>
+  <button id="go" type="button">Unsubscribe</button>
+  <small>supabase-security &middot; PMJ LIFE STORE LLC, 7901 4th St N Suite 4707, St. Petersburg, FL 33702 &middot; <a href="./">Back to the page</a></small>
+</main>
+<script>
+(function(){
+  var q=new URLSearchParams(location.search), l=q.get('l')||'', t=q.get('t')||'';
+  var b=document.getElementById('go'), m=document.getElementById('msg');
+  if(!l||!t){ m.innerHTML='<span class="bad">This link is incomplete.</span> Reply to any of our emails with &ldquo;unsubscribe&rdquo; and we&rsquo;ll remove you.'; b.hidden=true; return; }
+  b.addEventListener('click',function(){
+    b.disabled=true;
+    fetch('https://mknvxxhaatnqsrkcjydc.supabase.co/functions/v1/oct30-unsub',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({l:l,t:t})})
+      .then(function(r){return r.json();})
+      .then(function(j){ if(j.ok){ m.innerHTML='<span class="ok">Done. You&rsquo;re unsubscribed.</span> Sorry for the noise.'; b.hidden=true; } else { m.innerHTML='<span class="bad">That link didn&rsquo;t work.</span> Reply to any of our emails with &ldquo;unsubscribe&rdquo; and we&rsquo;ll remove you by hand.'; b.disabled=false; } })
+      .catch(function(){ m.innerHTML='<span class="bad">Couldn&rsquo;t reach the server.</span> Try again, or reply &ldquo;unsubscribe&rdquo; to any email.'; b.disabled=false; });
+  });
+})();
+</script>
+</body>
+</html>

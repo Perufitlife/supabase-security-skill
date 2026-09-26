@@ -8,8 +8,10 @@
 
 On **October 30, 2026** Supabase stops auto-granting new tables, views and sequences in `public` to `anon`, `authenticated` and `service_role` on **every existing project** ([changelog](https://supabase.com/changelog/45329-breaking-change-tables-not-exposed-to-data-and-graphql-api-automatically)). New projects already work this way. Your existing tables keep their grants. What changes:
 
-- every **new** table after Oct 30 answers `42501 permission denied` until you `GRANT` it;
+- every **new** table after Oct 30 answers `42501 permission denied` until you `GRANT` it, from the browser and from server code using the `service_role` key (only direct Postgres connections are unaffected);
 - replaying your migrations on a **new project, preview branch or `db reset`** already gives you tables nobody can reach.
+
+> **No terminal? Built it with Lovable, Bolt or Cursor?** Paste your GitHub repo link in the **[free Oct 30 check](https://perufitlife.github.io/supabase-security-skill/oct30/#check)**: you see the result in the page (red / amber / green) and get the full report, in plain English plus the SQL to fix it, by email. Public repos, no credentials.
 
 One command, no token, nothing leaves your machine:
 
@@ -81,6 +83,8 @@ jobs:
 
 You get inline annotations on the migration lines, a job summary, and the proposed migration as an artifact.
 
+> **Rather check it in the browser?** [Free check by repo URL](https://perufitlife.github.io/supabase-security-skill/oct30/#check), report by email.
+>
 > **Want this done + reviewed for you?** I'll apply least-privilege grants, fix the RLS gaps and verify it on a branch before Oct 30 → [perufitlife.github.io/supabase-security-skill/oct30](https://perufitlife.github.io/supabase-security-skill/oct30/)
 
 ---
