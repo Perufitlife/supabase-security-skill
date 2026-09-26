@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Supabase Oct 30 grants change: fixed in 48 hours | supabase-security</title>
+<meta name="description" content="On Oct 30, 2026 Supabase stops auto-granting new tables in public to anon, authenticated and service_role. We send a pull request with least-privilege grants, verified RLS and a CI check. From $490, 48 hours.">
+<link rel="canonical" href="https://perufitlife.github.io/supabase-security-skill/oct30/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#eef1f4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c1319" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://perufitlife.github.io/supabase-security-skill/oct30/">
+<meta property="og:title" content="After Oct 30, new Supabase tables ship locked. Get ready in 48 hours.">
+<meta property="og:description" content="Least-privilege grants as a pull request, RLS verified on every exposed table, and a CI check so it can't regress. From $490.">
+<meta property="og:image" content="https://perufitlife.github.io/supabase-security-skill/oct30/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="After Oct 30, new Supabase tables ship locked.">
+<meta name="twitter:description" content="Least-privilege grants as a pull request, RLS verified, CI check included. From $490, 48 hours.">
+<meta name="twitter:image" content="https://perufitlife.github.io/supabase-security-skill/oct30/og.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230b6e5c' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Fragment+Mono&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Supabase Oct 30 grants readiness",
+  "serviceType": "Supabase security hardening",
+  "description": "Least-privilege GRANTs for Supabase tables delivered as a pull request, with RLS verified on every exposed table and a CI check, ahead of Supabase's October 30, 2026 change to default privileges in the public schema.",
+  "url": "https://perufitlife.github.io/supabase-security-skill/oct30/",
+  "areaServed": "Worldwide",
+  "provider": {
+    "@type": "Person",
+    "name": "Renzo Madueño",
+    "url": "https://github.com/Perufitlife",
+    "email": "renzomacar@gmail.com"
+  },
+  "offers": [
+    {"@type": "Offer", "name": "Oct 30 Fix Pack", "description": "1 project, pull request within 48 hours: least-privilege grants for tables, views, sequences and RPC functions, RLS verified on every exposed table, verified with real API calls, CI guard.", "price": "490", "priceCurrency": "USD", "url": "https://buy.stripe.com/3cI28rc24ef05qp5v4cAo0v"},
+    {"@type": "Offer", "name": "Hardening + Proof Report", "description": "Fix Pack plus RLS, storage and function audit, live anon test on your own project, fixes as pull requests and a report for customer security questionnaires. 5 business days.", "price": "1490", "priceCurrency": "USD", "url": "https://buy.stripe.com/6oUfZh7LOgn85qp9LkcAo0w"},
+    {"@type": "Offer", "name": "Agency Fleet", "description": "Up to 10 client projects, white-label reports, CI guard in every repo, a re-test after Oct 30 and 90 days of weekly monitoring. 10 business days.", "price": "4900", "priceCurrency": "USD", "url": "https://buy.stripe.com/aFa00j0jm9YKf0Z6z8cAo0x"}
+  ]
+}
+</script>
+<style>
+:root{
+  --paper:#eef1f4; --paper-2:#e3e8ed; --card:#ffffff;
+  --ink:#0f1b26; --ink-2:#3f4d59; --ink-3:#66737f; --rule:#d0d8df;
+  --deny:#c3301f; --deny-bg:#fbe9e6; --grant:#0b6e5c; --grant-bg:#e2f1ec;
+  --btn:#0f1b26; --btn-ink:#ffffff;
+  --code:#111c25; --code-2:#0b141b; --code-ink:#d6dee5; --code-dim:#7f8e9a; --code-k:#8fb9e3; --code-s:#d9c77c; --code-bad:#ff8a7a; --code-ok:#6fd6b4;
+  --f:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --m:"Fragment Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --wrap:1180px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0c1319; --paper-2:#111b23; --card:#121d26;
+    --ink:#e7edf2; --ink-2:#aab6c0; --ink-3:#7f8c98; --rule:#233340;
+    --deny:#ff7361; --deny-bg:#2a1714; --grant:#45c9a4; --grant-bg:#10271f;
+    --btn:#e7edf2; --btn-ink:#0c1319;
+    --code:#080f14; --code-2:#050a0e;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0c1319; --paper-2:#111b23; --card:#121d26;
+  --ink:#e7edf2; --ink-2:#aab6c0; --ink-3:#7f8c98; --rule:#233340;
+  --deny:#ff7361; --deny-bg:#2a1714; --grant:#45c9a4; --grant-bg:#10271f;
+  --btn:#e7edf2; --btn-ink:#0c1319;
+  --code:#080f14; --code-2:#050a0e;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.55;font-variation-settings:"wdth" 100;overflow-x:clip}
+a{color:inherit}
+img,svg{display:block}
+code,pre,.mono{font-family:var(--m);font-size:.86em}
+:focus-visible{outline:3px solid var(--grant);outline-offset:3px;border-radius:4px}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 16px}
+@media (min-width:720px){.wrap{padding:0 32px}}
+.ico{width:1.15em;height:1.15em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:58px;gap:12px}
+.mark{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;font-size:15.5px;letter-spacing:-.01em}
+.mark .ico{color:var(--grant);width:20px;height:20px}
+.mark span{color:var(--ink-3);font-weight:500}
+.top nav{display:flex;align-items:center;gap:20px;font-size:15px}
+.top nav a.t{text-decoration:none;color:var(--ink-2)}
+.top nav a.t:hover{color:var(--ink)}
+.hide-s{display:none}
+@media (min-width:720px){.hide-s{display:inline-flex}}
+
+/* buttons */
+.btn{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:.5em;min-height:54px;padding:0 24px;border-radius:10px;background:var(--btn);color:var(--btn-ink);font-weight:650;font-size:17px;text-decoration:none;border:2px solid var(--btn);transition:transform .12s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:none}
+.btn.sm{min-height:40px;padding:0 14px;font-size:14.5px;border-radius:8px}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+.btn.ghost:hover{border-color:var(--ink-3)}
+.btn.grant{background:var(--grant);border-color:var(--grant);color:#fff}
+[data-theme="dark"] .btn.grant{color:#04140f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.grant{color:#04140f}}
+.link{color:var(--ink);font-weight:600;text-underline-offset:4px;text-decoration-thickness:1.5px}
+
+/* hero */
+.hero{padding:36px 0 56px}
+.hero-grid{display:grid;gap:28px}
+@media (min-width:1040px){.hero{padding:52px 0 84px}.hero-grid{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);grid-template-areas:"head head" "text demo";column-gap:56px;row-gap:36px;align-items:start}.hero-head{grid-area:head}.hero-text{grid-area:text}.hero-demo{grid-area:demo}}
+.when{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;color:var(--deny);background:var(--deny-bg);padding:5px 12px 5px 10px;border-radius:999px}
+.when .ico{width:16px;height:16px}
+h1{margin:18px 0 0;font-size:clamp(2.2rem,9vw,4.1rem);line-height:.98;letter-spacing:-.025em;font-weight:800;font-variation-settings:"wdth" 112}
+@media (min-width:1040px){h1{font-size:clamp(3.4rem,4.7vw,4.5rem);max-width:24ch}}
+.lede{margin:0;font-size:1.1rem;line-height:1.55;color:var(--ink-2);max-width:36em}
+.lede code{color:var(--ink);background:var(--paper-2);padding:.08em .35em;border-radius:5px}
+.ctas{display:flex;flex-direction:column;gap:12px;margin-top:28px}
+@media (min-width:560px){.ctas{flex-direction:row;align-items:center}}
+.micro{margin:12px 0 0;font-size:14.5px;color:var(--ink-3)}
+
+/* real timeline */
+.tl{margin-top:34px;max-width:520px}
+.tl-bar{position:relative;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--ink-3) 0,var(--ink-3) var(--p,82%),var(--rule) var(--p,82%))}
+.tl-today{position:absolute;top:50%;left:var(--p,82%);width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--paper);border:3px solid var(--ink)}
+.tl-end{position:absolute;right:-2px;top:50%;width:14px;height:14px;margin-top:-7px;border-radius:3px;background:var(--deny)}
+.tl-legend{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;font-size:13.5px;line-height:1.3;color:var(--ink-3)}
+.tl-legend b{display:block;color:var(--ink);font-weight:650}
+.tl-legend div:nth-child(2){text-align:center}
+.tl-legend div:last-child{text-align:right}
+.tl-legend div:last-child b{color:var(--deny)}
+.tl-left{margin:14px 0 0;font-size:15px;color:var(--ink-2)}
+.tl-left strong{color:var(--ink)}
+.press{display:flex;gap:10px;align-items:flex-start;margin:22px 0 0;padding:14px 0 0;border-top:1px solid var(--rule);max-width:520px;font-size:15px;line-height:1.45;color:var(--ink-2)}
+.press .ico{color:var(--deny);margin-top:2px;width:18px;height:18px}
+.press a{color:var(--ink);font-weight:600;text-underline-offset:3px}
+
+/* the demo */
+.demo{background:var(--card);border:1px solid var(--rule);border-radius:16px;overflow:hidden;box-shadow:0 30px 60px -40px rgba(15,27,38,.45)}
+.demo-h{padding:16px 16px 0}
+.demo-h p{margin:0;font-size:15px;color:var(--ink-2)}
+.demo-h p strong{color:var(--ink)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:14px 0 0;padding:0;list-style:none;position:relative}
+.steps::before{content:"";position:absolute;left:12.5%;right:12.5%;top:17px;height:2px;background:var(--rule)}
+.step{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:0 2px 14px;background:none;border:0;cursor:pointer;font:inherit;color:var(--ink-3);min-height:44px}
+.step .dot{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--card);border:2px solid var(--rule);color:var(--ink-3);font-weight:700;font-size:14px;position:relative;z-index:1;transition:background .15s,border-color .15s,color .15s}
+.step .dot .ico{width:17px;height:17px}
+.step .lbl{font-size:13.5px;font-weight:650;line-height:1.15;text-align:center;color:var(--ink-2)}
+.step .sub{font-size:12px;line-height:1.1;text-align:center}
+.step[aria-selected="true"] .lbl{color:var(--ink)}
+.step[aria-selected="true"]::after{content:"";position:absolute;left:12%;right:12%;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--ink)}
+.step[data-v="ok"][aria-selected="true"] .dot{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.step[data-v="bad"][aria-selected="true"] .dot{background:var(--deny);border-color:var(--deny);color:#fff}
+.step[data-v="leak"][aria-selected="true"] .dot{background:var(--deny);border-color:var(--deny);color:#fff}
+.step[data-v="good"][aria-selected="true"] .dot{background:var(--grant);border-color:var(--grant);color:#fff}
+.step[data-v="good"] .lbl{color:var(--grant)}
+.panes{display:grid;border-top:1px solid var(--rule)}
+@media (min-width:640px){.panes{grid-template-columns:1.05fr 1fr}}
+.pane{padding:14px 16px 16px;background:var(--code);color:var(--code-ink);min-width:0}
+.pane + .pane{background:var(--code-2);border-top:1px solid rgba(255,255,255,.06)}
+@media (min-width:640px){.pane + .pane{border-top:0;border-left:1px solid rgba(255,255,255,.06)}}
+.pane h3{margin:0 0 10px;font-family:var(--f);font-size:12.5px;font-weight:600;color:var(--code-dim);letter-spacing:.01em}
+.pane pre{margin:0;font-size:12.6px;line-height:1.62;white-space:pre;overflow-x:auto;min-height:12.4em}
+.pane pre code{font-size:inherit}
+.k{color:var(--code-k)} .c{color:var(--code-dim)} .s{color:var(--code-s)} .x{color:var(--code-bad)} .o{color:var(--code-ok)}
+.st{display:inline-block;padding:1px 7px;border-radius:5px;font-weight:600}
+.st.bad{background:rgba(255,120,100,.16);color:var(--code-bad)}
+.st.ok{background:rgba(111,214,180,.14);color:var(--code-ok)}
+.verdict{display:flex;gap:10px;align-items:flex-start;padding:14px 16px;font-size:15.5px;line-height:1.45;border-top:1px solid var(--rule);background:var(--card)}
+.verdict .ico{margin-top:2px;width:20px;height:20px}
+.verdict b{font-weight:700}
+.verdict[data-v="ok"] .ico{color:var(--ink)}
+.verdict[data-v="bad"] .ico,.verdict[data-v="leak"] .ico{color:var(--deny)}
+.verdict[data-v="bad"] b,.verdict[data-v="leak"] b{color:var(--deny)}
+.verdict[data-v="good"] .ico,.verdict[data-v="good"] b{color:var(--grant)}
+.panel[hidden]{display:none}
+.demo-foot{margin:10px 2px 0;font-size:13px;color:var(--ink-3)}
+.demo-foot a{color:var(--ink-2)}
+
+/* sections */
+.sec{padding:64px 0;border-top:1px solid var(--rule)}
+@media (min-width:1040px){.sec{padding:96px 0}}
+h2{margin:0;font-size:clamp(1.9rem,6.6vw,3rem);line-height:1.02;letter-spacing:-.02em;font-weight:800;font-variation-settings:"wdth" 108;max-width:22ch}
+.sec-lede{margin:16px 0 0;color:var(--ink-2);font-size:1.06rem;max-width:40em}
+
+/* pricing */
+.plans{display:grid;gap:18px;margin-top:36px}
+@media (min-width:980px){.plans{grid-template-columns:1fr 1.08fr 1fr;align-items:stretch;gap:20px}}
+.plan{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:24px 20px}
+@media (min-width:980px){.plan{padding:28px 26px}}
+.plan.rec{background:var(--ink);color:var(--paper);border-color:var(--ink);box-shadow:0 34px 60px -38px rgba(15,27,38,.6)}
+@media (min-width:980px){.plan.rec{margin:-14px 0}}
+.plan .tag{align-self:flex-start;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--grant);color:#fff;margin-bottom:12px}
+.plan .name{margin:0;font-size:1.35rem;font-weight:750;letter-spacing:-.01em;font-variation-settings:"wdth" 104}
+.plan .for{margin:4px 0 0;font-size:15px;color:var(--ink-2)}
+.plan.rec .for{color:color-mix(in srgb,var(--paper) 72%,transparent)}
+.price{display:flex;align-items:baseline;gap:8px;margin:18px 0 2px}
+.price b{font-size:2.9rem;line-height:1;font-weight:800;letter-spacing:-.03em;font-variation-settings:"wdth" 100}
+.price span{font-size:15px;color:var(--ink-3)}
+.plan.rec .price span{color:color-mix(in srgb,var(--paper) 62%,transparent)}
+.scope{margin:0;font-size:15px;font-weight:600}
+.plan ul{list-style:none;margin:18px 0 20px;padding:18px 0 0;border-top:1px solid var(--rule);display:grid;gap:10px;font-size:15.5px;line-height:1.42}
+.plan.rec ul{border-top-color:color-mix(in srgb,var(--paper) 18%,transparent)}
+.plan li{display:flex;gap:10px}
+.plan li .ico{color:var(--grant);margin-top:3px;width:17px;height:17px}
+.plan.rec li .ico{color:#6fd6b4}
+[data-theme="dark"] .plan.rec li .ico{color:var(--grant)}
+.plan .buy{margin-top:auto}
+.plan .btn{width:100%}
+.plan.rec .btn{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.order{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;font-size:14px;line-height:1.35;color:var(--ink-3)}
+.order .ico{width:16px;height:16px;margin-top:1px}
+.plan.rec .order{color:color-mix(in srgb,var(--paper) 66%,transparent)}
+.plans-note{display:grid;gap:6px;margin-top:22px;font-size:14.5px;color:var(--ink-3);max-width:60em}
+.plans-note p{margin:0}
+
+/* guarantee */
+.guar{display:grid;gap:28px;align-items:start}
+@media (min-width:980px){.guar{grid-template-columns:auto 1fr;gap:40px}}
+.guar-ico{width:68px;height:68px;border-radius:18px;display:grid;place-items:center;background:var(--grant-bg);color:var(--grant)}
+.guar-ico .ico{width:36px;height:36px;stroke-width:1.8}
+.guar h2{max-width:24ch}
+.guar-cols{display:grid;gap:18px;margin-top:24px}
+@media (min-width:760px){.guar-cols{grid-template-columns:1fr 1fr;gap:28px}}
+.guar-cols div{border-left:3px solid var(--grant);padding:2px 0 2px 16px}
+.guar-cols h3{margin:0;font-size:1.05rem;font-weight:700}
+.guar-cols p{margin:6px 0 0;color:var(--ink-2);font-size:16px}
+
+/* gaps */
+.gaps{list-style:none;margin:32px 0 0;padding:0;display:grid;gap:0;border-top:1px solid var(--rule);counter-reset:g}
+@media (min-width:900px){.gaps{grid-template-columns:repeat(3,1fr);gap:32px;border-top:0}}
+.gaps li{counter-increment:g;padding:20px 0;border-bottom:1px solid var(--rule)}
+@media (min-width:900px){.gaps li{border-bottom:0;border-top:3px solid var(--deny);padding:18px 0 0}}
+.gaps h3{margin:0;font-size:1.12rem;font-weight:700;letter-spacing:-.01em}
+.gaps p{margin:6px 0 0;color:var(--ink-2);font-size:16px}
+.gaps a{color:var(--ink);font-weight:600;text-underline-offset:3px}
+.gaps code{background:var(--paper-2);padding:.08em .35em;border-radius:5px;color:var(--ink)}
+/* free tool */
+.free{display:grid;gap:28px}
+.free>div,.hero-grid>div,.who>*{min-width:0}
+@media (min-width:1040px){.free{grid-template-columns:.8fr 1.2fr;gap:56px;align-items:start}}
+.term{background:var(--code);color:var(--code-ink);border-radius:14px;overflow:hidden;border:1px solid var(--rule)}
+.term-h{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;background:var(--code-2);font-size:13px;color:var(--code-dim)}
+.term pre{margin:0;padding:14px 16px 18px;font-size:12.6px;line-height:1.65;overflow-x:auto;white-space:pre}
+.copy{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 10px;border-radius:7px;border:1px solid rgba(255,255,255,.14);background:transparent;color:var(--code-ink);font:inherit;font-size:13px;cursor:pointer}
+.copy .ico{width:14px;height:14px}
+@media (max-width:559px){.cmd .copy .cl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.cmd{font-size:13.5px}}
+.cmd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:22px;padding:10px 10px 10px 14px;background:var(--code);color:var(--code-ink);border-radius:10px;font-family:var(--m);font-size:14.5px}
+.cmd code{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:inherit}
+.free-list{margin:20px 0 0;padding:0;list-style:none;display:grid;gap:10px;color:var(--ink-2);font-size:16px}
+.free-list li{display:flex;gap:10px}
+.free-list .ico{color:var(--grant);margin-top:4px;width:17px;height:17px}
+.term + .term{margin-top:14px}
+
+/* person */
+.who{display:grid;gap:26px}
+@media (min-width:980px){.who{grid-template-columns:1fr 1fr;gap:56px}}
+.idcard{display:flex;gap:16px;align-items:center}
+.avatar{width:64px;height:64px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--paper);font-family:var(--f);font-weight:750;font-size:22px;letter-spacing:-.02em;font-variation-settings:"wdth" 110}
+.idcard p{margin:0}
+.idcard .n{font-weight:700;font-size:1.15rem}
+.idcard .r{color:var(--ink-3);font-size:15px}
+.who-body>p{margin:18px 0 0;color:var(--ink-2)}
+.facts{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--rule)}
+.facts li{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--rule)}
+.facts .ico{color:var(--ink-3);margin-top:3px;width:20px;height:20px}
+.facts b{display:block;font-weight:700}
+.facts div>span{display:block;color:var(--ink-2);font-size:15.5px}
+.facts a{font-weight:600;text-underline-offset:3px}
+
+/* faq */
+.faq{margin-top:28px;max-width:52em;border-top:1px solid var(--rule)}
+.faq details{border-bottom:1px solid var(--rule)}
+.faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:60px;padding:12px 0;cursor:pointer;font-weight:650;font-size:1.06rem}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .ico{color:var(--ink-3);transition:transform .18s ease}
+.faq details[open] summary .ico{transform:rotate(45deg)}
+.faq details p{margin:0 0 18px;color:var(--ink-2);max-width:44em}
+.faq code{background:var(--paper-2);padding:.08em .35em;border-radius:5px;color:var(--ink)}
+
+/* final */
+.final{padding:72px 0 80px;border-top:1px solid var(--rule)}
+.final h2{max-width:18ch;font-size:clamp(2.1rem,7.4vw,3.6rem)}
+.final .ctas{margin-top:30px}
+
+footer{border-top:1px solid var(--rule);padding:28px 0 40px;font-size:14px;color:var(--ink-3)}
+footer .wrap{display:grid;gap:14px}
+footer p{margin:0;max-width:60em}
+footer .row{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center}
+footer a{color:var(--ink-2)}
+.theme{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border:1px solid var(--rule);border-radius:8px;background:transparent;color:var(--ink-2);font:inherit;font-size:13.5px;cursor:pointer}
+.theme .ico{width:15px;height:15px}
+
+/* mobile buy bar */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--rule);box-shadow:0 -12px 30px -20px rgba(15,27,38,.4);transform:translateY(110%);transition:transform .22s ease}
+.bar.on{transform:none}
+.bar p{margin:0;font-size:14px;line-height:1.25;color:var(--ink-2)}
+.bar p b{display:block;color:var(--ink);font-size:15.5px}
+.bar .btn{min-height:46px;padding:0 18px;font-size:15.5px}
+@media (min-width:980px){.bar{display:none}}
+@media (prefers-reduced-motion:reduce){.bar,.btn,.step .dot,.faq summary .ico{transition:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="m9 15 2 2 4-4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></symbol>
+  <symbol id="i-no" viewBox="0 0 24 24"><path d="m15 9-6 6"/><path d="M2.586 16.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586z"/><path d="m9 9 6 6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></symbol>
+  <symbol id="i-pr" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" x2="6" y1="9" y2="21"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="./" aria-label="supabase-security, Oct 30 readiness">
+      <svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg>supabase-security<span>/ Oct 30</span>
+    </a>
+    <nav aria-label="Page">
+      <a class="t hide-s" href="#plans">Plans</a>
+      <a class="t hide-s" href="#faq">FAQ</a>
+      <a class="btn sm" href="#plans">See plans</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero" aria-labelledby="h1">
+  <div class="wrap hero-grid">
+    <div class="hero-head">
+      <p class="when"><svg class="ico" aria-hidden="true"><use href="#i-cal"/></svg>Reaches existing projects on Oct 30, 2026</p>
+      <h1 id="h1">After Oct 30, new Supabase tables ship locked. We get you ready in 48&nbsp;hours.</h1>
+    </div>
+    <div class="hero-text">
+      <p class="lede">From Oct 30, new tables in <code>public</code> get no automatic access for the API roles. Existing tables keep theirs, but the next table you create, and every migration replayed on a fresh project, returns <code>42501</code>. The bulk grant in Supabase&rsquo;s own rollback fixes that by reopening <code>anon</code>. We send a pull request with per-table grants, verified against your row level security, plus a CI check.</p>
+      <div class="ctas" data-cta>
+        <a class="btn" href="https://buy.stripe.com/3cI28rc24ef05qp5v4cAo0v">Get the Fix Pack, $490</a>
+        <a class="btn ghost" href="#free">See the check we run</a>
+      </div>
+      <p class="micro">One project. Pull request within 48 hours of access, or a full refund.</p>
+
+      <div class="tl" id="tl" style="--p:82%">
+        <div class="tl-bar" role="img" aria-label="Timeline: announced April 28, default for new projects May 30, applied to all existing projects October 30, 2026"><span class="tl-today" title="Today"></span><span class="tl-end"></span></div>
+        <div class="tl-legend">
+          <div><b>Apr 28</b>Announced</div>
+          <div><b>May 30</b>New projects</div>
+          <div><b>Oct 30</b>Every existing project</div>
+        </div>
+        <p class="tl-left" id="tl-left"><strong>34 days</strong> until it reaches existing projects. Supabase is emailing project owners now.</p>
+      </div>
+      <p class="press"><svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg><span>Sept 25: UpGuard found about 16,000 Supabase databases with tables anyone could read, many holding personal data. <a href="https://techcrunch.com/2026/09/25/some-supabase-customers-are-publicly-exposing-reams-of-peoples-data-to-the-web/" rel="noopener">TechCrunch</a></span></p>
+    </div>
+
+    <div class="hero-demo">
+      <div class="demo" id="demo">
+        <div class="demo-h">
+          <p><strong>One migration, four outcomes.</strong> Tap each step.</p>
+          <div class="steps" role="tablist" aria-label="What happens to a new table">
+            <button class="step" role="tab" id="t1" aria-controls="p1" aria-selected="false" tabindex="-1" data-v="ok"><span class="dot">1</span><span class="lbl">Today</span><span class="sub">auto-granted</span></button>
+            <button class="step" role="tab" id="t2" aria-controls="p2" aria-selected="true" tabindex="0" data-v="bad"><span class="dot">2</span><span class="lbl">Oct 30</span><span class="sub">no grant</span></button>
+            <button class="step" role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1" data-v="leak"><span class="dot">3</span><span class="lbl">Quick fix</span><span class="sub">bulk grant</span></button>
+            <button class="step" role="tab" id="t4" aria-controls="p4" aria-selected="false" tabindex="-1" data-v="good"><span class="dot"><svg class="ico" aria-hidden="true"><use href="#i-pr"/></svg></span><span class="lbl">Our PR</span><span class="sub">per-table</span></button>
+          </div>
+        </div>
+
+        <div class="panel" role="tabpanel" id="p1" aria-labelledby="t1" hidden>
+          <div class="panes">
+            <div class="pane"><h3>Your migration</h3><pre><code><span class="c">-- 20261103_invoices.sql</span>
+<span class="k">create table</span> public.invoices (
+  id      bigint <span class="k">primary key</span>,
+  user_id uuid <span class="k">not null</span>,
+  total   numeric <span class="k">not null</span>
+);
+<span class="k">alter table</span> public.invoices
+  <span class="k">enable row level security</span>;
+<span class="k">create policy</span> <span class="s">"own invoices"</span>
+  <span class="k">on</span> public.invoices
+  <span class="k">for select to</span> authenticated
+  <span class="k">using</span> (user_id = auth.uid());</code></pre></div>
+            <div class="pane"><h3>What your app gets</h3><pre><code><span class="c">GET /rest/v1/invoices</span>
+<span class="c">signed-in user</span>
+
+<span class="st ok">200 OK</span>
+[ 3 rows, this user's own ]</code></pre></div>
+          </div>
+          <p class="verdict" data-v="ok"><svg class="ico" aria-hidden="true"><use href="#i-ok"/></svg><span><b>Works.</b> Today Supabase grants every new table in <code>public</code> to all three API roles automatically, so nobody writes a grant.</span></p>
+        </div>
+
+        <div class="panel" role="tabpanel" id="p2" aria-labelledby="t2">
+          <div class="panes">
+            <div class="pane"><h3>Same migration, merged Nov 3</h3><pre><code><span class="c">-- 20261103_invoices.sql</span>
+<span class="k">create table</span> public.invoices (
+  id      bigint <span class="k">primary key</span>,
+  user_id uuid <span class="k">not null</span>,
+  total   numeric <span class="k">not null</span>
+);
+<span class="k">alter table</span> public.invoices
+  <span class="k">enable row level security</span>;
+<span class="k">create policy</span> <span class="s">"own invoices"</span>
+  <span class="k">on</span> public.invoices
+  <span class="k">for select to</span> authenticated
+  <span class="k">using</span> (user_id = auth.uid());</code></pre></div>
+            <div class="pane"><h3>What your app gets</h3><pre><code><span class="c">GET /rest/v1/invoices</span>
+<span class="c">signed-in user</span>
+
+<span class="st bad">403 Forbidden</span>
+{
+  "code": <span class="x">"42501"</span>,
+  "message": <span class="x">"permission denied</span>
+<span class="x">    for table invoices"</span>
+}</code></pre></div>
+          </div>
+          <p class="verdict" data-v="bad"><svg class="ico" aria-hidden="true"><use href="#i-no"/></svg><span><b>Breaks, for new tables.</b> Existing tables keep their grants, so nothing fails on Oct 30 itself. The next table you ship fails, and so does every migration you replay on a new project.</span></p>
+        </div>
+
+        <div class="panel" role="tabpanel" id="p3" aria-labelledby="t3" hidden>
+          <div class="panes">
+            <div class="pane"><h3>The rollback in Supabase&rsquo;s changelog</h3><pre><code><span class="k">grant select, insert,</span>
+      <span class="k">update, delete</span>
+  <span class="k">on all tables in schema</span> public
+  <span class="k">to</span> anon, authenticated,
+     service_role;</code></pre></div>
+            <div class="pane"><h3>What your app gets</h3><pre><code><span class="c">GET /rest/v1/invoices</span>
+<span class="st ok">200 OK</span>
+
+<span class="c">GET /rest/v1/admin_notes</span>
+<span class="c">anon, not signed in</span>
+<span class="st bad">200 OK</span>
+[ every row, <span class="x">no RLS on it</span> ]</code></pre></div>
+          </div>
+          <p class="verdict" data-v="leak"><svg class="ico" aria-hidden="true"><use href="#i-alert"/></svg><span><b>Works, and leaks.</b> It&rsquo;s safe only if every table has RLS and the right policies. Any table without them is now readable and writable with your anon key, which ships inside your JavaScript bundle.</span></p>
+        </div>
+
+        <div class="panel" role="tabpanel" id="p4" aria-labelledby="t4" hidden>
+          <div class="panes">
+            <div class="pane"><h3>Our pull request</h3><pre><code><span class="c">-- explicit, per table, per role</span>
+<span class="k">grant select</span>
+  <span class="k">on</span> public.invoices
+  <span class="k">to</span> authenticated;
+<span class="k">grant select, insert,</span>
+      <span class="k">update, delete</span>
+  <span class="k">on</span> public.invoices
+  <span class="k">to</span> service_role;
+<span class="c">-- anon: no grant, on purpose</span></code></pre></div>
+            <div class="pane"><h3>What your app gets</h3><pre><code><span class="c">signed in</span>  <span class="st ok">200 OK</span>
+           own rows only
+<span class="c">anon</span>       <span class="st ok">401</span> denied
+           <span class="c">as intended</span>
+
+<span class="c">CI, next migration</span>
+<span class="o">supabase-security migrations</span>
+<span class="o">0 tables missing grants</span></code></pre></div>
+          </div>
+          <p class="verdict" data-v="good"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg><span><b>Works, and stays closed.</b> Each role gets only what your app uses, RLS is verified on every table the grants expose, and CI blocks any future table that forgets its grant.</span></p>
+        </div>
+      </div>
+      <p class="demo-foot">Behavior as described in <a href="https://supabase.com/changelog/45329-breaking-change-tables-not-exposed-to-data-and-graphql-api-automatically" rel="noopener">Supabase&rsquo;s changelog of Apr 28, 2026</a>. Table names are examples.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="plans" aria-labelledby="h-plans">
+  <div class="wrap">
+    <h2 id="h-plans">Pick how far you want to go.</h2>
+    <p class="sec-lede">Supabase&rsquo;s Security Advisor already lists what&rsquo;s affected, for free. You&rsquo;re paying for the fix: written, delivered as a pull request you review and merge, verified with real API calls, and guarded in CI. We don&rsquo;t touch production.</p>
+
+    <div class="plans">
+      <article class="plan" data-cta>
+        <h3 class="name">Oct 30 Fix Pack</h3>
+        <p class="for">Keep shipping tables after Oct 30 without opening anything.</p>
+        <p class="price"><b>$490</b><span>one-time</span></p>
+        <p class="scope">1 project, delivered in 48 hours</p>
+        <ul>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Pull request with least-privilege grants for every table, view, sequence and RPC function your app reaches through the API</span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Row level security checked on every table those grants expose</span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Verified before you merge: your migrations replayed on a clean database, then called as anon and as a signed-in user</span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>CI check that fails the build when a migration adds a table without grants</span></li>
+        </ul>
+        <div class="buy">
+          <a class="btn" href="https://buy.stripe.com/3cI28rc24ef05qp5v4cAo0v">Get the Fix Pack, $490</a>
+          <p class="order" data-by="2026-10-27"><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg><span>Order by Tue, Oct 27 to have it merged before Oct 30.</span></p>
+        </div>
+      </article>
+
+      <article class="plan rec" data-cta>
+        <span class="tag">Recommended</span>
+        <h3 class="name">Hardening + Proof Report</h3>
+        <p class="for">For apps whose customers ask how their data is protected.</p>
+        <p class="price"><b>$1,490</b><span>one-time</span></p>
+        <p class="scope">1 project, delivered in 5 business days</p>
+        <ul>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Everything in the Fix Pack</span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Audit of RLS policies, storage buckets and database functions</span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Live test with your anon key against your own project, with your written OK: we show exactly what an outsider can read</span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Each fix as its own pull request</span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>A report you can attach to customer security questionnaires (<a href="../sample-report-supabase.html">see a real one</a>)</span></li>
+        </ul>
+        <div class="buy">
+          <a class="btn" href="https://buy.stripe.com/6oUfZh7LOgn85qp9LkcAo0w">Get Hardening, $1,490</a>
+          <p class="order" data-by="2026-10-22"><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg><span>Order by Thu, Oct 22 to have it before Oct 30.</span></p>
+        </div>
+      </article>
+
+      <article class="plan" data-cta>
+        <h3 class="name">Agency Fleet</h3>
+        <p class="for">For studios and agencies running Supabase apps for clients.</p>
+        <p class="price"><b>$4,900</b><span>one-time</span></p>
+        <p class="scope">Up to 10 client projects, 10 business days</p>
+        <ul>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>The Fix Pack on up to 10 client projects</span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>White-label reports under your agency&rsquo;s name</span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>CI check installed in every repo</span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>A re-test after Oct 30, then 90 days of weekly monitoring on every project</span></li>
+        </ul>
+        <div class="buy">
+          <a class="btn" href="https://buy.stripe.com/aFa00j0jm9YKf0Z6z8cAo0x">Get Agency Fleet, $4,900</a>
+          <p class="order" data-by="2026-10-15"><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg><span>Order by Thu, Oct 15 to have all 10 before Oct 30.</span></p>
+        </div>
+      </article>
+    </div>
+
+    <div class="plans-note">
+      <p>Delivery times start when we have access to the repo. More than 10 projects, or something else? <a class="link" href="mailto:renzomacar@gmail.com?subject=Oct%2030%20custom%20quote&amp;body=Projects%3A%20%0AWhat%20we%20need%3A%20%0ADeadline%3A%20">Email for a quote</a>.</p>
+      <p>Payments are processed by Stripe under our parent company, Rotate Pilot.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="guarantee" aria-labelledby="h-guar">
+  <div class="wrap guar">
+    <div class="guar-ico"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg></div>
+    <div>
+      <h2 id="h-guar">If a table we covered breaks after Oct 30, we fix it free. If we&rsquo;re late, you get every dollar back.</h2>
+      <div class="guar-cols">
+        <div>
+          <h3>Covered tables stay reachable</h3>
+          <p>Every table in our pull request is listed by name. If one of them can&rsquo;t be reached through the Data API after Oct 30, we fix it at no charge.</p>
+        </div>
+        <div>
+          <h3>On time, or refunded</h3>
+          <p>If the deliverable isn&rsquo;t in your hands within the time on your plan, counted from when you give us access, we refund 100% of what you paid.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="gaps" aria-labelledby="h-gaps">
+  <div class="wrap">
+    <h2 id="h-gaps">The change locks new tables. It leaves three doors open.</h2>
+    <ol class="gaps">
+      <li><h3>Old grants stay</h3><p>Existing tables keep every grant they have today, including tables that were never meant to be public. <a href="https://supabase.com/changelog/45329-breaking-change-tables-not-exposed-to-data-and-graphql-api-automatically" rel="noopener">Changelog</a></p></li>
+      <li><h3>The official rollback reopens anon</h3><p>Supabase&rsquo;s rollback grants select, insert, update and delete on every table in <code>public</code> to <code>anon</code>. Safe only where every table has RLS and correct policies.</p></li>
+      <li><h3>RPC functions stay callable</h3><p>Postgres lets <code>PUBLIC</code> execute functions, and <code>anon</code> inherits it. The revoke in Supabase&rsquo;s docs doesn&rsquo;t remove it. <a href="https://github.com/supabase/supabase/issues/49338" rel="noopener">Issue #49338</a></p></li>
+    </ol>
+    <p class="sec-lede">Our pull request closes all three for the tables and functions your app uses, and the CI check keeps them closed.</p>
+  </div>
+</section>
+
+<section class="sec" id="free" aria-labelledby="h-free">
+  <div class="wrap free">
+    <div>
+      <h2 id="h-free">The check we run first. Try it on your repo.</h2>
+      <p class="sec-lede">Our migration linter reads your <code>supabase/migrations</code> folder offline. No credentials, no network calls. It shows what&rsquo;s missing; the pull request is what fixes it.</p>
+      <div class="cmd"><code id="cmd">npx supabase-security migrations</code><button class="copy" type="button" aria-label="Copy command" data-copy="npx supabase-security migrations"><svg class="ico" aria-hidden="true"><use href="#i-copy"/></svg><span class="cl">Copy</span></button></div>
+      <ul class="free-list">
+        <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Flags tables created without grants for the API roles</span></li>
+        <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Flags blanket grants to <code>anon</code> that reopen tables without RLS</span></li>
+        <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>Runs in GitHub Actions on every pull request</span></li>
+      </ul>
+      <p class="micro">Open source, MIT. <a class="link" href="https://github.com/Perufitlife/supabase-security-skill">Source on GitHub</a>.</p>
+    </div>
+    <div>
+      <div class="term">
+        <div class="term-h"><span>Example output</span></div>
+<pre><code><span class="c">$</span> npx supabase-security migrations
+<span class="c">Reading supabase/migrations (42 files)</span>
+
+<span class="x">error</span> 20261103_invoices.sql:1
+  public.invoices has no grants for
+  anon, authenticated or service_role.
+  <span class="c">After Oct 30 the API returns 42501.</span>
+
+<span class="x">error</span> 20260911_hotfix.sql:3
+  grant all on all tables in schema
+  public to anon
+  <span class="c">Reopens 4 tables with RLS disabled.</span>
+
+<span class="s">warn</span>  20260802_stats.sql:14
+  function public.get_stats() is
+  security definer, and anon can call
+  it through PUBLIC.
+
+<span class="o">ok</span>    38 tables have explicit grants
+
+2 errors, 1 warning. No credentials used.</code></pre>
+      </div>
+      <div class="term">
+        <div class="term-h"><span>.github/workflows/supabase.yml</span><button class="copy" type="button" data-copy="- uses: Perufitlife/supabase-security-skill@main&#10;  with:&#10;    mode: migrations"><svg class="ico" aria-hidden="true"><use href="#i-copy"/></svg><span class="cl">Copy</span></button></div>
+<pre><code>- <span class="k">uses:</span> Perufitlife/supabase-security-skill@main
+  <span class="k">with:</span>
+    <span class="k">mode:</span> migrations</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="who" aria-labelledby="h-who">
+  <div class="wrap who">
+    <div class="who-body">
+      <h2 id="h-who">Who does the work.</h2>
+      <div class="idcard" style="margin-top:26px">
+        <div class="avatar" aria-hidden="true">RM</div>
+        <div><p class="n">Renzo Madueño</p><p class="r">Builder of supabase-security (MIT)</p></div>
+      </div>
+      <p>I run my own businesses on Supabase in production. I wrote supabase-security after auditing those projects and finding tables anyone could read with the anon key. The same tool does the first pass on your project; I review every grant and every policy by hand before the pull request goes out.</p>
+      <p>Questions before you buy? <a class="link" href="mailto:renzomacar@gmail.com?subject=Oct%2030%20question">Email me</a>. I answer myself.</p>
+    </div>
+    <ul class="facts">
+      <li><svg class="ico" aria-hidden="true"><use href="#i-star"/></svg><div><b>Open source, MIT</b><span><span id="stars">24</span> stars on <a href="https://github.com/Perufitlife/supabase-security-skill">GitHub</a>. Read every check before you trust it.</span></div></li>
+      <li><svg class="ico" aria-hidden="true"><use href="#i-db"/></svg><div><b>Run on our own production apps first</b><span>In a 139-table web app it found 17 tables with RLS off and full access for anon, fixed in one transaction. In a 55-table internal CRM, 13 lower-severity findings.</span></div></li>
+      <li><svg class="ico" aria-hidden="true"><use href="#i-file"/></svg><div><b>A real report, not a mockup</b><span><a href="../sample-report-supabase.html">Open the sample report</a>, generated from one of our own projects.</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec" id="faq" aria-labelledby="h-faq">
+  <div class="wrap">
+    <h2 id="h-faq">Questions before you buy.</h2>
+    <div class="faq">
+      <details><summary>Does this affect my app?<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Yes if your app talks to Supabase through the Data API: supabase-js, any client library, or the REST and GraphQL endpoints. If you only connect with a Postgres connection string (an ORM, a server, psql), this change doesn&rsquo;t touch you.</p></details>
+      <details><summary>Will my app break on Oct 30?<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. Existing tables keep their grants. What fails is the next table, view or sequence someone adds to <code>public</code> without a grant (you, a teammate or an AI coding tool) and your migrations replayed on a new project. You&rsquo;ll see <code>42501 permission denied for table</code>: HTTP 401 for anon, 403 for signed-in users. An empty <code>[]</code> is a different problem: the grant is there and RLS hides the rows.</p></details>
+      <details><summary>Why not just grant everything to anon?<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>A bulk grant to <code>anon</code> (it&rsquo;s the rollback in Supabase&rsquo;s own changelog) makes the error go away and gives anyone with your anon key access to every table without row level security. That&rsquo;s the exposure this change exists to close. Grants belong per table and per role.</p></details>
+      <details><summary>Can I do this myself?<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Yes. Supabase&rsquo;s changelog has the SQL and our linter shows what&rsquo;s missing. Buy a plan if you want it written, checked against your RLS, verified with real API calls and merged before Oct 30 without spending your week on it.</p></details>
+      <details><summary>What access do you need?<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Your repo (invite GitHub user Perufitlife, or send a read-only token) and your Supabase project ref. We don&rsquo;t need your service_role key or your database password. The live test in Hardening uses your public anon key and runs only after you say yes in writing.</p></details>
+      <details><summary>Do you change my production database?<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. Everything arrives as a pull request. You review it, merge it and deploy it the way you always do.</p></details>
+      <details><summary>Our tables were made in the dashboard, not in migrations.<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>That&rsquo;s common. We read the live schema and write the migration that matches it, so your repo becomes the record of who can access what.</p></details>
+      <details><summary>Who will the charge come from?<svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Stripe processes the payment under Rotate Pilot, our parent company, so that&rsquo;s the name on the checkout and your statement. Need an invoice with your company details? <a class="link" href="mailto:renzomacar@gmail.com?subject=Oct%2030%20invoice%20request">Email us</a>.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="final" aria-labelledby="h-final">
+  <div class="wrap">
+    <h2 id="h-final">October 30 is a Friday. Have the grants merged before it.</h2>
+    <div class="ctas" data-cta>
+      <a class="btn" href="https://buy.stripe.com/3cI28rc24ef05qp5v4cAo0v">Get the Fix Pack, $490</a>
+      <a class="btn ghost" href="#plans">Compare plans</a>
+    </div>
+    <p class="micro">Pull request within 48 hours of access, or a full refund.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>supabase-security is an independent open-source project. It is not affiliated with or endorsed by Supabase, Inc.</p>
+    <div class="row">
+      <a href="mailto:renzomacar@gmail.com?subject=Oct%2030%20question">renzomacar@gmail.com</a>
+      <a href="https://github.com/Perufitlife/supabase-security-skill">GitHub</a>
+      <a href="../">All tools</a>
+      <button class="theme" type="button" id="theme"><svg class="ico" aria-hidden="true"><use href="#i-moon"/></svg><span>Dark mode</span></button>
+    </div>
+  </div>
+</footer>
+
+<div class="bar" id="bar" aria-hidden="true">
+  <p><b>Oct 30 Fix Pack, $490</b>1 project, PR in 48 hours</p>
+  <a class="btn" href="https://buy.stripe.com/3cI28rc24ef05qp5v4cAo0v" tabindex="-1">Get it</a>
+</div>
+
+<script>
+(function(){
+  var d=document, root=d.documentElement;
+  /* theme */
+  try{var saved=localStorage.getItem('oct30-theme'); if(saved) root.setAttribute('data-theme',saved);}catch(e){}
+  var tb=d.getElementById('theme');
+  function isDark(){var t=root.getAttribute('data-theme'); return t? t==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;}
+  function paintTheme(){ if(!tb) return; var dk=isDark(); tb.querySelector('use').setAttribute('href', dk?'#i-sun':'#i-moon'); tb.querySelector('span').textContent= dk?'Light mode':'Dark mode'; }
+  paintTheme();
+  tb && tb.addEventListener('click',function(){ var n=isDark()?'light':'dark'; root.setAttribute('data-theme',n); try{localStorage.setItem('oct30-theme',n);}catch(e){} paintTheme(); });
+
+  /* real dates */
+  var DAY=864e5, now=Date.now();
+  var start=Date.UTC(2026,3,28), end=Date.UTC(2026,9,30);
+  var tl=d.getElementById('tl'), left=d.getElementById('tl-left');
+  if(tl){ var p=Math.max(0,Math.min(1,(now-start)/(end-start))); tl.style.setProperty('--p',(p*100).toFixed(1)+'%'); }
+  if(left){
+    var days=Math.ceil((end-now)/DAY);
+    if(days>1) left.innerHTML='<strong>'+days+' days</strong> until it reaches existing projects. Supabase is emailing project owners now.';
+    else if(days===1) left.innerHTML='<strong>Tomorrow</strong> it reaches existing projects.';
+    else left.innerHTML='<strong>In effect since Oct 30.</strong> The break comes with your next new table.';
+  }
+  d.querySelectorAll('[data-by]').forEach(function(el){
+    var by=Date.parse(el.getAttribute('data-by')+'T23:59:59-07:00');
+    if(now>by){ el.querySelector('span').textContent= now>end ? 'Still worth it after Oct 30: the break comes with your next new table.' : 'Delivered after Oct 30 if ordered now. Still worth it: the break comes with your next new table.'; }
+  });
+
+  /* demo tabs */
+  var tabs=[].slice.call(d.querySelectorAll('.step'));
+  function select(t,focus){
+    tabs.forEach(function(x){ var on=x===t; x.setAttribute('aria-selected',on); x.tabIndex=on?0:-1; d.getElementById(x.getAttribute('aria-controls')).hidden=!on; });
+    if(focus) t.focus();
+  }
+  var touched=false;
+  tabs.forEach(function(t,i){
+    t.addEventListener('click',function(){ touched=true; select(t); });
+    t.addEventListener('keydown',function(e){
+      var k=e.key, j=null;
+      if(k==='ArrowRight') j=(i+1)%tabs.length; else if(k==='ArrowLeft') j=(i-1+tabs.length)%tabs.length; else if(k==='Home') j=0; else if(k==='End') j=tabs.length-1;
+      if(j!==null){ e.preventDefault(); touched=true; select(tabs[j],true); }
+    });
+  });
+  /* the one orchestrated moment: show "Today", then the break */
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches && !/[?&]static/.test(location.search)){
+    select(tabs[0]);
+    setTimeout(function(){ if(!touched) select(tabs[1]); },1600);
+  }
+
+  /* copy buttons */
+  d.querySelectorAll('[data-copy]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var txt=b.getAttribute('data-copy'), lbl=b.querySelector('.cl');
+      function done(){ var o=lbl.textContent; lbl.textContent='Copied'; setTimeout(function(){lbl.textContent=o;},1400); }
+      if(navigator.clipboard) navigator.clipboard.writeText(txt).then(done,function(){});
+    });
+  });
+
+  /* live star count, falls back to the static number */
+  if(window.fetch){ fetch('https://api.github.com/repos/Perufitlife/supabase-security-skill').then(function(r){return r.ok?r.json():null;}).then(function(j){ if(j&&j.stargazers_count>=24) d.getElementById('stars').textContent=j.stargazers_count; }).catch(function(){}); }
+
+  /* mobile buy bar: after the hero, hidden while any real CTA is visible */
+  var bar=d.getElementById('bar'), hero=d.querySelector('.hero .ctas');
+  if(bar && 'IntersectionObserver' in window){
+    var ctaVisible=0, pastHero=false;
+    function paint(){ var on=pastHero && ctaVisible===0; bar.classList.toggle('on',on); bar.setAttribute('aria-hidden',!on); bar.querySelector('a').tabIndex=on?0:-1; }
+    new IntersectionObserver(function(es){ es.forEach(function(e){ pastHero=!e.isIntersecting && e.boundingClientRect.top<0; }); paint(); }).observe(hero);
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.target.closest('.hero')) return; ctaVisible+= e.isIntersecting?1:(e.target._seen?-1:0); e.target._seen=e.isIntersecting; }); ctaVisible=Math.max(0,ctaVisible); paint(); });
+    d.querySelectorAll('[data-cta]').forEach(function(el){ io.observe(el); });
+  }
+})();
+</script>
+</body>
+</html>
