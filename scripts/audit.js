@@ -421,8 +421,20 @@ async function audit(token, ref, opts = {}) {
 // CLI
 async function main() {
   const args = process.argv.slice(2);
+
+  // `migrations` subcommand (v0.5): keyless, offline lint of SQL migrations for the Oct 30, 2026 change.
+  if (args[0] === "migrations") {
+    const { main: lint } = await import("./migrations.js");
+    process.exitCode = await lint(args.slice(1));
+    return;
+  }
+
   if (args.includes("--help") || args.includes("-h") || (args.length === 0)) {
     console.error(`Usage:
+  Oct 30, 2026 migration lint (no credentials, offline):
+    supabase-security migrations [dir]              # dir defaults to supabase/migrations
+    supabase-security migrations --fix-sql grants.sql --fail-on high
+
   Full audit (needs Personal Access Token):
     SUPABASE_ACCESS_TOKEN=sbp_xxx supabase-security <project-ref> [--json|--html report.html] [--no-probe]
 
