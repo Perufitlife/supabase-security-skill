@@ -245,7 +245,7 @@ export function noRepoEmail(lead: LeadLike, reason: "no_repo" | "repo_unreadable
     `<ol style="margin:0 0 14px;padding-left:20px">${steps.map((s) => `<li style="margin:0 0 8px">${s}</li>`).join("")}</ol>` +
     (reason !== "repo_unreadable" ? CODE(LIVE_SQL) + P(`Lovable Cloud projects don't give you a SQL editor; if that's you, ask Lovable's agent to "run the Supabase security scan and enable RLS on every table".`) : "") +
     H("Or have it done") +
-    P(`If anything comes back open, or you'd rather not touch SQL, the ${A(LINKS.fixpack, "Fix Pack ($490, 48 hours)")} works without migrations too: we read your live schema (read-only) and send the fix as a pull request.${lead.rol === "agency" ? ` Several client projects? ${A(LINKS.fleet, "Agency Fleet")}.` : ""}`) +
+    P(`If anything comes back open, or you'd rather not touch SQL, the ${A(LINKS.fixpack, "Fix Pack ($490, 48 hours)")} works without migrations too: we read your live schema (read-only) and deliver the fix ${reason === "no_repo" ? "as a reviewed SQL migration you apply (or a pull request, if you connect a repo)" : "as a pull request"}.${lead.rol === "agency" ? ` Several client projects? ${A(LINKS.fleet, "Agency Fleet")}.` : ""}`) +
     P(`Or just reply with what you found and I'll tell you what it means.<br>Renzo`),
     unsubPage);
   const text = `Hi ${firstName(lead)},
@@ -256,7 +256,7 @@ WHAT TO DO (FREE)
 ${steps.map((s, i) => `${i + 1}. ${s.replace(/<[^>]+>/g, "")}`).join("\n")}
 ${reason !== "repo_unreadable" ? `\n${LIVE_SQL}\n\nLovable Cloud has no SQL editor: ask Lovable's agent to run the security scan and enable RLS on every table.\n` : ""}
 OR HAVE IT DONE
-Fix Pack, $490, 48 hours, works without migrations (we read your live schema, read-only, and send a pull request): ${LINKS.fixpack}${lead.rol === "agency" ? `\nAgency Fleet: ${LINKS.fleet}` : ""}
+Fix Pack, $490, 48 hours, works without migrations (we read your live schema, read-only, and deliver the fix ${reason === "no_repo" ? "as a SQL migration you apply" : "as a pull request"}): ${LINKS.fixpack}${lead.rol === "agency" ? `\nAgency Fleet: ${LINKS.fleet}` : ""}
 
 Or just reply with what you found and I'll tell you what it means.
 Renzo${textFooter(unsubPage)}`;
